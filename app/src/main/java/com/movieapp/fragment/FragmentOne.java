@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.ToxicBakery.viewpager.transforms.ABaseTransformer;
 import com.ToxicBakery.viewpager.transforms.AccordionTransformer;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListener{
     private ConvenientBanner convenientBanner;
     private ArrayList<Integer> localImages = new ArrayList<Integer>();
+    private ArrayList<String> localDescribes = new ArrayList<String>();
     private ArrayList<String> transformerList = new ArrayList<String>();
 
     public FragmentOne() {
@@ -77,27 +79,31 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
                 //设置两个点图片作为翻页指示器，不设置则没有指示器，可以根据自己需求自行配合自己的指示器,不需要圆点指示器可用不设
                 .setPageIndicator(new int[]{R.mipmap.ic_page_indicator, R.mipmap.ic_page_indicator_focused})
                 //设置指示器的方向
-                .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT)
+                .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
                 .setManualPageable(true);//设置不能手动影响
                  //设置滑动监听
                  convenientBanner.setOnPageChangeListener(this);
 
     }
 
-
-
     public class LocalImageHolderView implements Holder<Integer> {
         private ImageView imageView;
+        private TextView textView;
         @Override
         public View createView(Context context) {
-            imageView = new ImageView(context);
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            return imageView;
+//            imageView = new ImageView(context);
+//            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+//            return imageView;
+            View view=LayoutInflater.from(context).inflate(R.layout.ad_item,null);
+            imageView= (ImageView) view.findViewById(R.id.id_img);
+            textView= (TextView) view.findViewById(R.id.id_tv);
+            return view;
         }
 
         @Override
         public void UpdateUI(Context context, final int position, Integer data) {
             imageView.setImageResource(data);
+            textView.setText(localDescribes.get(position));
         }
     }
 
@@ -108,6 +114,7 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
         //本地图片集合
         for (int position = 0; position < 7; position++) {
             localImages.add(getResId("ic_test_" + position, R.mipmap.class));
+            localDescribes.add("描述"+position);
         }
         //各种翻页效果
         transformerList.add(DefaultTransformer.class.getSimpleName());
