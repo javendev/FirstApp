@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -26,6 +27,7 @@ public class MainViewPageActivity extends FragmentActivity implements RadioGroup
     private RadioButton radio_channel, radio_message , radio_better , radio_setting ;
     //类型为Fragment的动态数组
     private ArrayList<Fragment> fragmentList ;
+    Fragment oneFragment,twoFragment,threeFragment,fourFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,15 +53,15 @@ public class MainViewPageActivity extends FragmentActivity implements RadioGroup
 
         fragmentList = new ArrayList<Fragment>() ;
 
-        Fragment oneFragment = new FragmentOne() ;
-        Fragment twoFragment = new FragmentTwo();
-        Fragment thirdFragment = new FragmentThree();
-        Fragment fourFragment = new FragmentFour();
+        oneFragment = new FragmentOne() ;
+        twoFragment = new FragmentTwo();
+        threeFragment = new FragmentThree();
+        fourFragment = new FragmentFour();
 
         //将各Fragment加入数组中
         fragmentList.add(oneFragment);
         fragmentList.add(twoFragment);
-        fragmentList.add(thirdFragment);
+        fragmentList.add(threeFragment);
         fragmentList.add(fourFragment);
 
         //设置ViewPager的设配器
@@ -67,7 +69,15 @@ public class MainViewPageActivity extends FragmentActivity implements RadioGroup
         //当前为第一个页面
         main_viewPager.setCurrentItem(0);
         //ViewPager的页面改变监听器
-        main_viewPager.setOnPageChangeListener(new MyViewPageListner());
+        main_viewPager.addOnPageChangeListener(new MyViewPageListner());
+    }
+
+    //隐藏所有Fragment
+    private void hideAllFragment(FragmentTransaction fragmentTransaction){
+        if(oneFragment != null && !oneFragment.isHidden())fragmentTransaction.hide(oneFragment);
+        if(twoFragment != null && !twoFragment.isHidden())fragmentTransaction.hide(twoFragment);
+        if(threeFragment != null && !threeFragment.isHidden())fragmentTransaction.hide(threeFragment);
+        if(fourFragment != null  && !fourFragment.isHidden() )fragmentTransaction.hide(fourFragment);
     }
 
     public class MyAdapter extends FragmentPagerAdapter{
@@ -96,22 +106,33 @@ public class MainViewPageActivity extends FragmentActivity implements RadioGroup
         }
         @Override
         public void onPageSelected(int arg0) {
+            FragmentTransaction fTransaction = getSupportFragmentManager().beginTransaction();
+            hideAllFragment(fTransaction);
             //获取当前页面用于改变对应RadioButton的状态
             int current = main_viewPager.getCurrentItem() ;
             switch(current){
                 case 0:
                     main_tab_RadioGroup.check(R.id.radio_channel);
+                    if (oneFragment.isHidden())
+                    fTransaction.show(oneFragment);
                     break;
                 case 1:
                     main_tab_RadioGroup.check(R.id.radio_message);
+                    if (twoFragment.isHidden())
+                    fTransaction.show(twoFragment);
                     break;
                 case 2:
                     main_tab_RadioGroup.check(R.id.radio_better);
+                    if (threeFragment.isHidden())
+                    fTransaction.show(threeFragment);
                     break;
                 case 3:
                     main_tab_RadioGroup.check(R.id.radio_setting);
+                    if (fourFragment.isHidden())
+                    fTransaction.show(fourFragment);
                     break;
             }
+            fTransaction.commit();
         }
     }
 

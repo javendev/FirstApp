@@ -64,7 +64,7 @@
             android:padding="5dp"
             android:textColor="@drawable/tab_viewpage_menu_text"
             android:textSize="16sp"
-            android:drawableTop="@drawable/tab_viewpage_menu_message"
+            android:drawableTop="@drawable/tab_viewpage_menu_channel"
             android:text="消息"
             android:checked="true"
             />
