@@ -2,15 +2,16 @@ package com.movieapp.mian;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.movieapp.R;
+import com.movieapp.fragment.FragmentFive;
 import com.movieapp.fragment.FragmentFour;
 import com.movieapp.fragment.FragmentOne;
 import com.movieapp.fragment.FragmentThree;
@@ -18,16 +19,16 @@ import com.movieapp.fragment.FragmentTwo;
 
 import java.util.ArrayList;
 
-public class MainViewPageActivity extends FragmentActivity implements RadioGroup.OnCheckedChangeListener {
+public class MainViewPageActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener {
     //ViewPager控件
     private ViewPager main_viewPager ;
     //RadioGroup控件
     private RadioGroup main_tab_RadioGroup ;
     //RadioButton控件
-    private RadioButton radio_channel, radio_message , radio_better , radio_setting ;
+    private RadioButton radio_home, radio_tags , radio_vip , radio_collect, radio_my;
     //类型为Fragment的动态数组
     private ArrayList<Fragment> fragmentList ;
-    Fragment oneFragment,twoFragment,threeFragment,fourFragment;
+    Fragment oneFragment,twoFragment,threeFragment,fourFragment,fiveFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +42,11 @@ public class MainViewPageActivity extends FragmentActivity implements RadioGroup
     private void InitView() {
         main_tab_RadioGroup = (RadioGroup) findViewById(R.id.main_tab_RadioGroup) ;
 
-        radio_channel = (RadioButton) findViewById(R.id.radio_channel) ;
-        radio_message = (RadioButton) findViewById(R.id.radio_message) ;
-        radio_better = (RadioButton) findViewById(R.id.radio_better) ;
-        radio_setting = (RadioButton) findViewById(R.id.radio_setting) ;
+        radio_home = (RadioButton) findViewById(R.id.radio_home) ;
+        radio_tags = (RadioButton) findViewById(R.id.radio_tags) ;
+        radio_vip = (RadioButton) findViewById(R.id.radio_vip) ;
+        radio_collect = (RadioButton) findViewById(R.id.radio_collect) ;
+        radio_my = (RadioButton) findViewById(R.id.radio_my) ;
 
         main_tab_RadioGroup.setOnCheckedChangeListener(this);
     }
@@ -53,16 +55,18 @@ public class MainViewPageActivity extends FragmentActivity implements RadioGroup
 
         fragmentList = new ArrayList<Fragment>() ;
 
-        oneFragment = new FragmentOne() ;
+        oneFragment = new FragmentOne();
         twoFragment = new FragmentTwo();
         threeFragment = new FragmentThree();
         fourFragment = new FragmentFour();
+        fiveFragment = new FragmentFive();
 
         //将各Fragment加入数组中
         fragmentList.add(oneFragment);
         fragmentList.add(twoFragment);
         fragmentList.add(threeFragment);
         fragmentList.add(fourFragment);
+        fragmentList.add(fiveFragment);
 
         //设置ViewPager的设配器
         main_viewPager.setAdapter(new MyAdapter(getSupportFragmentManager() , fragmentList));
@@ -78,6 +82,7 @@ public class MainViewPageActivity extends FragmentActivity implements RadioGroup
         if(twoFragment != null && !twoFragment.isHidden())fragmentTransaction.hide(twoFragment);
         if(threeFragment != null && !threeFragment.isHidden())fragmentTransaction.hide(threeFragment);
         if(fourFragment != null  && !fourFragment.isHidden() )fragmentTransaction.hide(fourFragment);
+        if(fiveFragment != null  && !fiveFragment.isHidden() )fragmentTransaction.hide(fiveFragment);
     }
 
     public class MyAdapter extends FragmentPagerAdapter{
@@ -112,27 +117,31 @@ public class MainViewPageActivity extends FragmentActivity implements RadioGroup
             int current = main_viewPager.getCurrentItem() ;
             switch(current){
                 case 0:
-                    main_tab_RadioGroup.check(R.id.radio_channel);
+                    main_tab_RadioGroup.check(R.id.radio_home);
                     if (oneFragment.isHidden())
                     fTransaction.show(oneFragment);
                     break;
                 case 1:
-                    main_tab_RadioGroup.check(R.id.radio_message);
+                    main_tab_RadioGroup.check(R.id.radio_tags);
                     if (twoFragment.isHidden())
                     fTransaction.show(twoFragment);
                     break;
                 case 2:
-                    main_tab_RadioGroup.check(R.id.radio_better);
+                    main_tab_RadioGroup.check(R.id.radio_vip);
                     if (threeFragment.isHidden())
                     fTransaction.show(threeFragment);
                     break;
                 case 3:
-                    main_tab_RadioGroup.check(R.id.radio_setting);
+                    main_tab_RadioGroup.check(R.id.radio_collect);
                     if (fourFragment.isHidden())
                     fTransaction.show(fourFragment);
                     break;
+                case 4:
+                    main_tab_RadioGroup.check(R.id.radio_my);
+                    if (fiveFragment.isHidden())
+                    fTransaction.show(fiveFragment);
+                    break;
             }
-            fTransaction.commit();
         }
     }
 
@@ -141,17 +150,20 @@ public class MainViewPageActivity extends FragmentActivity implements RadioGroup
         //获取当前被选中的RadioButton的ID，用于改变ViewPager的当前页
         int current=0;
         switch(checkedId){
-            case R.id.radio_channel:
+            case R.id.radio_home:
                 current = 0 ;
                 break ;
-            case R.id.radio_message:
+            case R.id.radio_tags:
                 current = 1 ;
                 break;
-            case R.id.radio_better:
+            case R.id.radio_vip:
                 current = 2 ;
                 break;
-            case R.id.radio_setting:
+            case R.id.radio_collect:
                 current = 3 ;
+                break ;
+            case R.id.radio_my:
+                current = 4 ;
                 break ;
         }
         if(main_viewPager.getCurrentItem() != current){

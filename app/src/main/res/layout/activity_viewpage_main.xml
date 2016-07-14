@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+   <!-- <RelativeLayout
         android:id="@+id/ly_top_bar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -26,7 +26,7 @@
             android:background="@color/div_white"
             android:layout_alignParentBottom="true"/>
 
-    </RelativeLayout>
+    </RelativeLayout>-->
 
     <android.support.v4.view.ViewPager
         android:id="@+id/main_ViewPager"
@@ -52,8 +52,7 @@
         android:orientation="horizontal">
 
         <RadioButton
-            android:id="@+id/radio_channel"
-
+            android:id="@+id/radio_home"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -64,14 +63,13 @@
             android:padding="5dp"
             android:textColor="@drawable/tab_viewpage_menu_text"
             android:textSize="16sp"
-            android:drawableTop="@drawable/tab_viewpage_menu_channel"
-            android:text="消息"
+            android:drawableTop="@drawable/tab_viewpage_menu_home"
+            android:text="首页"
             android:checked="true"
             />
 
         <RadioButton
-            android:id="@+id/radio_message"
-
+            android:id="@+id/radio_tags"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -82,14 +80,12 @@
             android:padding="5dp"
             android:textColor="@drawable/tab_viewpage_menu_text"
             android:textSize="16sp"
-
-            android:drawableTop="@drawable/tab_viewpage_menu_message"
-            android:text="信息"
+            android:drawableTop="@drawable/tab_viewpage_menu_tags"
+            android:text="频道"
             />
 
         <RadioButton
-            android:id="@+id/radio_better"
-
+            android:id="@+id/radio_vip"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -100,28 +96,39 @@
             android:padding="5dp"
             android:textColor="@drawable/tab_viewpage_menu_text"
             android:textSize="16sp"
-
-            android:drawableTop="@drawable/tab_viewpage_menu_better"
+            android:drawableTop="@drawable/tab_viewpage_menu_vip"
+            android:text="VIP"
+            />
+        <RadioButton
+            android:id="@+id/radio_collect"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/tab_menu_bg"
+            android:drawablePadding="3dp"
+            android:button="@null"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textColor="@drawable/tab_viewpage_menu_text"
+            android:textSize="16sp"
+            android:drawableTop="@drawable/tab_viewpage_menu_collect"
+            android:text="精选"
+            android:checked="false" />
+        <RadioButton
+            android:id="@+id/radio_my"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/tab_menu_bg"
+            android:drawablePadding="3dp"
+            android:button="@null"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textColor="@drawable/tab_viewpage_menu_text"
+            android:textSize="16sp"
+            android:drawableTop="@drawable/tab_viewpage_menu_my"
             android:text="我的"
-            />
-        <RadioButton
-            android:id="@+id/radio_setting"
-
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/tab_menu_bg"
-            android:drawablePadding="3dp"
-            android:button="@null"
-            android:gravity="center"
-            android:padding="5dp"
-            android:textColor="@drawable/tab_viewpage_menu_text"
-            android:textSize="16sp"
-
-            android:drawableTop="@drawable/tab_viewpage_menu_setting"
-            android:text="设置"
-
-            />
+            android:checked="false" />
     </RadioGroup>
 
 
