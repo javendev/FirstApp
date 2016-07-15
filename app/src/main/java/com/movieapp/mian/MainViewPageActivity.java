@@ -81,8 +81,8 @@ public class MainViewPageActivity extends AppCompatActivity implements RadioGrou
         if(oneFragment != null && !oneFragment.isHidden())fragmentTransaction.hide(oneFragment);
         if(twoFragment != null && !twoFragment.isHidden())fragmentTransaction.hide(twoFragment);
         if(threeFragment != null && !threeFragment.isHidden())fragmentTransaction.hide(threeFragment);
-        if(fourFragment != null  && !fourFragment.isHidden() )fragmentTransaction.hide(fourFragment);
-        if(fiveFragment != null  && !fiveFragment.isHidden() )fragmentTransaction.hide(fiveFragment);
+        if(fourFragment != null  && !fourFragment.isHidden())fragmentTransaction.hide(fourFragment);
+        if(fiveFragment != null  && !fiveFragment.isHidden())fragmentTransaction.hide(fiveFragment);
     }
 
     public class MyAdapter extends FragmentPagerAdapter{

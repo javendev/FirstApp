@@ -11,20 +11,20 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.movieapp.R;
+import com.movieapp.adapter.CustomCommonAdapter;
 import com.movieapp.utils.Res;
-import com.zhy.adapter.recyclerview.CommonAdapter;
-import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
+import com.orhanobut.logger.Logger;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentThree extends Fragment {
+public class FragmentThree2 extends Fragment {
     private Context mContext;
     private RecyclerView recyclerview;
     private List<Integer> list;
     private List<String> describes;
-    CommonAdapter mAdapter;
+    CustomCommonAdapter commonAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,10 +52,10 @@ public class FragmentThree extends Fragment {
             describes.add("原始数据"+position);
         }
 
-        mAdapter= new CommonAdapter<Integer>(mContext, R.layout.vip, list){
-
+        commonAdapter = new CustomCommonAdapter<Integer>(mContext, R.layout.vip, list) {
             @Override
-            protected void convert(ViewHolder holder, Integer integer, int position) {
+            protected void convertView(ViewHolder holder, Integer s, int position) {
+                Logger.v("position:"+position);
                 holder.setImageResource(R.id.id_vip_hight, R.mipmap.hight_img);
                 holder.setImageResource(R.id.id_vip_pic,list.get(position));
                 holder.setImageResource(R.id.id_vip_vp,R.mipmap.vp);
@@ -63,7 +63,8 @@ public class FragmentThree extends Fragment {
             }
         };
 
-        mAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+
+        commonAdapter.setCustomOnItemClickListener(new CustomCommonAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, Object o, int position) {
                 Toast.makeText(mContext, "onItemClick position:" + position + "内容:" + o.toString(), Toast.LENGTH_SHORT).show();
@@ -76,7 +77,8 @@ public class FragmentThree extends Fragment {
             }
         });
 
-        recyclerview.setAdapter(mAdapter);
+
+        recyclerview.setAdapter(commonAdapter);
         recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {

@@ -129,7 +129,7 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
                 .setManualPageable(true);//设置不能手动影响
                  //设置滑动监听
                  convenientBanner.setOnPageChangeListener(this);
-        mAdapter=new CommonAdapter(getActivity().getApplication(),R.layout.item_list2, images) {
+        mAdapter=new CommonAdapter(getActivity().getApplication(),R.layout.item_list, images) {
 
             @Override
             protected void convert(ViewHolder holder, Object o, int position) {

@@ -13,9 +13,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.movieapp.R;
-import com.movieapp.adapter.CustomCommonAdapter;
 import com.movieapp.utils.Res;
-import com.orhanobut.logger.Logger;
+import com.zhy.adapter.recyclerview.CommonAdapter;
+import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class FragmentFour extends Fragment {
     private RecyclerView recyclerview;
     private List<Integer> list;
     private List<String> describes;
-    CustomCommonAdapter commonAdapter;
+    CommonAdapter commonAdapter;
 
 
     private Handler handler = new Handler() {
@@ -51,7 +51,7 @@ public class FragmentFour extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mContext=getActivity().getApplicationContext();
-        View view=inflater.inflate(R.layout.fragment_third, container, false);
+        View view=inflater.inflate(R.layout.fragment_four, container, false);
         initView(view);
         return view;
     }
@@ -66,11 +66,10 @@ public class FragmentFour extends Fragment {
             list.add(Res.getResId("ic_test_" + position, R.mipmap.class));
             describes.add("原始数据"+position);
         }
+        commonAdapter = new CommonAdapter<Integer>(mContext, R.layout.collects, list){
 
-        commonAdapter = new CustomCommonAdapter<Integer>(mContext, R.layout.collects, list) {
             @Override
-            protected void convertView(ViewHolder holder, Integer s, int position) {
-                Logger.v("position:"+position);
+            protected void convert(ViewHolder holder, Integer integer, int position) {
                 holder.setImageResource(R.id.id_collect_pic,list.get(position));
                 holder.setImageResource(R.id.id_collect_hight, R.mipmap.hight_img);
                 holder.setImageResource(R.id.id_collect_vp,R.mipmap.vp);
@@ -80,7 +79,8 @@ public class FragmentFour extends Fragment {
             }
         };
 
-        commonAdapter.setCustomOnItemClickListener(new CustomCommonAdapter.OnItemClickListener() {
+
+        commonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, Object o, int position) {
                 Toast.makeText(mContext, "onItemClick position:" + position + "内容:" + o.toString(), Toast.LENGTH_SHORT).show();
