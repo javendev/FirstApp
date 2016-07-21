@@ -52,7 +52,7 @@ public class FragmentThree extends Fragment {
             describes.add("原始数据"+position);
         }
 
-        mAdapter= new CommonAdapter<Integer>(mContext, R.layout.vip, list){
+        mAdapter= new CommonAdapter<Integer>(mContext, R.layout.item_vip_content, list){
 
             @Override
             protected void convert(ViewHolder holder, Integer integer, int position) {

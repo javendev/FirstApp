@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.orhanobut.logger.Logger;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
@@ -18,6 +19,7 @@ public abstract class CustomCommonAdapter<T> extends CommonAdapter<T> {
     @Override
     protected void convert(ViewHolder holder, T t, int position) {
         int tempposition = position == 0 ? 0 : position - 1;
+        Logger.v("tempposition>"+tempposition);
         setCustomClick(holder, tempposition);
         convertView(holder, t, tempposition);
     }
@@ -54,7 +56,7 @@ public abstract class CustomCommonAdapter<T> extends CommonAdapter<T> {
             viewHolder.getConvertView().setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    return mOnItemClickListener.onItemLongClick(v, viewHolder, mDatas.get(position), position);
+                    return mOnItemClickListener.onItemLongClick(v, (RecyclerView.ViewHolder)viewHolder, mDatas.get(position), position);
                 }
             });
         }

@@ -33,7 +33,9 @@ import com.ToxicBakery.viewpager.transforms.ZoomOutTranformer;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
+import com.bigkoo.convenientbanner.listener.OnItemClickListener;
 import com.movieapp.R;
+import com.movieapp.service.impl.ImageServiceImpl;
 import com.movieapp.utils.Res;
 import com.orhanobut.logger.Logger;
 import com.zhy.adapter.recyclerview.CommonAdapter;
@@ -45,32 +47,38 @@ import com.zhy.adapter.recyclerview.wrapper.LoadMoreWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListener{
+public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListener, OnItemClickListener {
+    private final static int LOADINGNOM_WHAT=0x123;
 
     private ConvenientBanner convenientBanner;
-    private List<Integer> adLocalImages = new ArrayList<Integer>();
+    private List<String> adLocalImages = new ArrayList<String>();
     private List<String> adLocalDescribes = new ArrayList<String>();
+
     private List<Integer> images = new ArrayList<Integer>();
     private List<String> describes = new ArrayList<String>();
-
-
-
     private List<String> transformerList = new ArrayList<String>();
 
     private RecyclerView mRecyclerView;
     private CommonAdapter<String> mAdapter;
     private HeaderAndFooterWrapper mHeaderAndFooterWrapper;
-    private EmptyWrapper mEmptyWrapper;
     private LoadMoreWrapper mLoadMoreWrapper;
-    private List<String> mDatas = new ArrayList<>();
+
+
+    private EmptyWrapper mEmptyWrapper;
     private View ad;
+
+    private ImageView loadingNom;
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
+
+            if (msg.what==LOADINGNOM_WHAT){
+                loadingNom.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+            }
+
             super.handleMessage(msg);
-            loadMore();
         }
     };
     public FragmentOne() {
@@ -81,9 +89,7 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
         super.onCreate(savedInstanceState);
         //确保只加载一次
         initTransformerList();
-
         loadTestDatas();
-        initDatas();
     }
 
     @Override
@@ -98,16 +104,10 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
     }
 
     private void initView(View view){
-
+        loadingNom= (ImageView) view.findViewById(R.id.id_lading_nom);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
 //        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-    }
-
-    private void initEmptyView()
-    {
-        mEmptyWrapper = new EmptyWrapper(mAdapter);
-        mEmptyWrapper.setEmptyView(LayoutInflater.from(getActivity().getApplication()).inflate(R.layout.empty_view, mRecyclerView, false));
     }
 
 
@@ -127,8 +127,11 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
                 //设置指示器的方向
                 .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
                 .setManualPageable(true);//设置不能手动影响
+                 //点击监听
+                 convenientBanner .setOnItemClickListener(this);
                  //设置滑动监听
                  convenientBanner.setOnPageChangeListener(this);
+
         mAdapter=new CommonAdapter(getActivity().getApplication(),R.layout.item_list, images) {
 
             @Override
@@ -137,27 +140,18 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
                 holder.setText(R.id.tv_text, describes.get(position-1));
             }
         };
-
         initHeaderAndFooter();
         initEmptyView();
-
-
         mLoadMoreWrapper = new LoadMoreWrapper(mHeaderAndFooterWrapper);
-        mLoadMoreWrapper.setLoadMoreView(R.layout.default_loading);
-        mLoadMoreWrapper.setOnLoadMoreListener(new LoadMoreWrapper.OnLoadMoreListener(){
-            @Override
-            public void onLoadMoreRequested(){
-                handler.sendEmptyMessageDelayed(0, 3000);
-            }
-        });
 
         mRecyclerView.setAdapter(mLoadMoreWrapper);
 
         mAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener<Integer>(){
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, Integer o, int position){
-                Toast.makeText(getActivity().getApplicationContext(), "pos = " + position, Toast.LENGTH_SHORT).show();
-                mAdapter.notifyItemRemoved(position);
+                Toast.makeText(getActivity().getApplicationContext(), "pos = " + (position-1), Toast.LENGTH_SHORT).show();
+
+//                mRecyclerView.getAdapter().notifyItemRemoved(position);
             }
 
             @Override
@@ -167,7 +161,12 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
         });
     }
 
-    public class LocalImageHolderView implements Holder<Integer> {
+    @Override
+    public void onItemClick(int position) {
+        Logger.e("广告点击了："+position);
+    }
+
+    public class LocalImageHolderView implements Holder<String> {
         private ImageView imageView;
         private TextView textView;
         @Override
@@ -179,46 +178,41 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
         }
 
         @Override
-        public void UpdateUI(Context context, final int position, Integer data) {
-            imageView.setImageResource(data);
+        public void UpdateUI(Context context, final int position, String data) {
+//            imageView.setImageResource(data);
             textView.setText(adLocalDescribes.get(position));
+            ImageServiceImpl.getInstance(context).setImage(data,imageView,R.mipmap.ic_test_1);
         }
     }
-
+    private void initEmptyView(){
+        mEmptyWrapper = new EmptyWrapper(mAdapter);
+        mEmptyWrapper.setEmptyView(LayoutInflater.from(getActivity().getApplication()).inflate(R.layout.empty_view, mRecyclerView, false));
+    }
     private void initHeaderAndFooter(){
         mHeaderAndFooterWrapper = new HeaderAndFooterWrapper(mAdapter);
         mHeaderAndFooterWrapper.addHeaderView(ad);
-    }
-
-
-    private  void  loadMore(){
-        for (int i = 0; i < 10; i++)
-        {
-//            mDatas.add("Add:" + i);
-            images.add(R.mipmap.ic_test_4);
-            describes.add("Add:" + i);
-        }
-//        mLoadMoreWrapper.notifyDataSetChanged();
-        mRecyclerView.getAdapter().notifyDataSetChanged();
     }
     /*
    加入测试Views
    * */
     private void loadTestDatas() {
+        adLocalImages.add("http://www.6188.com/upload_6188s/flashAll/s800/20120517/1337218925uatdTW.jpg");
+        adLocalImages.add("http://p2.pccoo.cn/bbs/20140411/201404111721506076.png");
+        adLocalImages.add("http://img5.imgtn.bdimg.com/it/u=646049329,3325478164&fm=21&gp=0.jpg");
+        adLocalImages.add("http://www.6188.com/upload_6188s/flashAll/s800/20120517/1337218925uatdTW.jpg");
+        adLocalImages.add("http://www.6188.com/upload_6188s/flashAll/s800/20120517/1337218925uatdTW.jpg");
+        adLocalImages.add("http://www.6188.com/upload_6188s/flashAll/s800/20120517/1337218925uatdTW.jpg");
+        adLocalImages.add("http://www.6188.com/upload_6188s/flashAll/s800/20120517/1337218925uatdTW.jpg");
         //本地图片集合
         for (int position = 0; position < 7; position++) {
-            adLocalImages.add(Res.getResId("ic_test_" + position, R.mipmap.class));
+//            adLocalImages.add(Res.getResId("ic_test_" + position, R.mipmap.class));
+
             adLocalDescribes.add("描述"+position);
 
             images.add(Res.getResId("ic_test_" + position, R.mipmap.class));
             describes.add("原始数据:"+position);
         }
-    }
-
-    private void initDatas() {
-        for (int i = 'A'; i <= 'z'; i++) {
-            mDatas.add((char) i + "");
-        }
+//        handler.sendEmptyMessageDelayed(LOADINGNOM_WHAT,3000);
     }
 
 

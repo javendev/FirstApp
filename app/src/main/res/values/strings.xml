@@ -9,4 +9,21 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_main">MainActivity</string>
+
+    <string name="vip_play">会员独享</string>
+    <string name="vip_string1">激情无限成人影院，高清热播院线大片</string>
+    <string name="vip_string2">性感劲爆美女直播，独家私密网红视频</string>
+    <string name="vip_string3">立即开通会员，免费观看所有激情视频</string>
+    <string name="vip_m_info">仅需￥30</string>
+    <string name="vip_y_info">仅需￥58</string>
+    <string name="vip_n_info">仅需￥98</string>
+    <string name="vip_show">领取会员专享大礼包</string>
+    <string name="imgDesc">图片描述</string>
+
+    <string name="setting_account">个人账号</string>
+    <string name="setting_phone">投诉热线</string>
+    <string name="setting_protocol">用户协议</string>
+    <string name="setting_cleanCache">清楚缓存</string>
+    <string name="setting_aboutus">关于我们</string>
+
 </resources>

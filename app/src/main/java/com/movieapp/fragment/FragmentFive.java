@@ -3,80 +3,75 @@ package com.movieapp.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.movieapp.R;
-import com.movieapp.adapter.CustomCommonAdapter;
-import com.movieapp.utils.Res;
 import com.orhanobut.logger.Logger;
-import com.zhy.adapter.recyclerview.base.ViewHolder;
 
-import java.util.ArrayList;
-import java.util.List;
+public class FragmentFive extends Fragment implements View.OnClickListener{
 
-public class FragmentFive extends Fragment {
+    TextView settingPersonText;
+    RelativeLayout settingsPerson;
+    RelativeLayout settingPhone;
+    RelativeLayout settingsProtocol;
+    RelativeLayout settingCleanCache;
+    RelativeLayout settingAboutus;
     private Context mContext;
-    private RecyclerView recyclerview;
-    private List<Integer> list;
-    private List<String> describes;
-    CustomCommonAdapter commonAdapter;
-
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mContext=getActivity().getApplicationContext();
-        View view=inflater.inflate(R.layout.fragment_five, container, false);
+        mContext = getActivity().getApplicationContext();
+        View view = inflater.inflate(R.layout.fragment_five, container, false);
         initView(view);
         return view;
     }
-    private void initView(View view) {
-        recyclerview = (RecyclerView) view.findViewById(R.id.id_recyclerview);
-        LinearLayoutManager linear = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
-        recyclerview.setLayoutManager(linear);
-        list = new ArrayList<>();
-        describes = new ArrayList<>();
-        //本地图片集合
-        for (int position = 0; position < 10; position++) {
-            list.add(Res.getResId("ic_test_" + position, R.mipmap.class));
-            describes.add("原始数据"+position);
+
+    private  void initView(View view){
+        settingPersonText = (TextView) view.findViewById(R.id.id_settings_person_text);
+        settingsPerson = (RelativeLayout) view.findViewById(R.id.id_settings_person);
+        settingPhone = (RelativeLayout) view.findViewById(R.id.id_settings_phone);
+        settingCleanCache = (RelativeLayout) view.findViewById(R.id.id_settings_cleanCache);
+        settingsProtocol = (RelativeLayout) view.findViewById(R.id.id_settings_protocol);
+        settingAboutus = (RelativeLayout) view.findViewById(R.id.id_settings_aboutus);
+        settingsPerson.setOnClickListener(this);
+        settingPhone.setOnClickListener(this);
+        settingCleanCache.setOnClickListener(this);
+        settingsProtocol.setOnClickListener(this);
+        settingAboutus.setOnClickListener(this);
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.id_settings_person:
+                settingPersonText.setText("1234567890123456");
+                break;
+            case R.id.id_settings_phone:
+                Logger.e("点击了..id_setting_phone");
+                break;
+            case R.id.id_settings_protocol:
+                Logger.e("点击了..id_settings_protocol");
+                break;
+            case R.id.id_settings_cleanCache:
+                Logger.e("点击了..id_setting_cleanCache");
+                break;
+            case R.id.id_settings_aboutus:
+                Logger.e("点击了..id_setting_aboutus");
+                break;
         }
-
-        commonAdapter = new CustomCommonAdapter<Integer>(mContext, R.layout.vip, list) {
-            @Override
-            protected void convertView(ViewHolder holder, Integer s, int position) {
-                Logger.v("position:"+position);
-                holder.setImageResource(R.id.id_vip_hight, R.mipmap.hight_img);
-                holder.setImageResource(R.id.id_vip_pic,list.get(position));
-                holder.setImageResource(R.id.id_vip_vp,R.mipmap.vp);
-                holder.setText(R.id.id_vip_describes,describes.get(position));
-            }
-        };
-
-        commonAdapter.setCustomOnItemClickListener(new CustomCommonAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, RecyclerView.ViewHolder holder, Object o, int position) {
-                Toast.makeText(mContext, "onItemClick position:" + position + "内容:" + o.toString(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, Object o, int position) {
-                Toast.makeText(mContext, "onItemLongClick position:" + position + "内容:" + o.toString(), Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
-        recyclerview.setAdapter(commonAdapter);
     }
 }

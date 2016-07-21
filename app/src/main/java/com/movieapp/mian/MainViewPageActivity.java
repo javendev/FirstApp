@@ -2,11 +2,11 @@ package com.movieapp.mian;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -19,7 +19,7 @@ import com.movieapp.fragment.FragmentTwo;
 
 import java.util.ArrayList;
 
-public class MainViewPageActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener {
+public class MainViewPageActivity extends FragmentActivity implements RadioGroup.OnCheckedChangeListener {
     //ViewPager控件
     private ViewPager main_viewPager ;
     //RadioGroup控件
@@ -35,11 +35,11 @@ public class MainViewPageActivity extends AppCompatActivity implements RadioGrou
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_viewpage_main);
         //界面初始函数，用来获取定义的各控件对应的ID
-        InitView();
+        initView();
         //ViewPager初始化函数
-        InitViewPager();
+        initViewPager();
     }
-    private void InitView() {
+    private void initView() {
         main_tab_RadioGroup = (RadioGroup) findViewById(R.id.main_tab_RadioGroup) ;
 
         radio_home = (RadioButton) findViewById(R.id.radio_home) ;
@@ -50,7 +50,7 @@ public class MainViewPageActivity extends AppCompatActivity implements RadioGrou
 
         main_tab_RadioGroup.setOnCheckedChangeListener(this);
     }
-    private void InitViewPager() {
+    private void initViewPager() {
         main_viewPager = (ViewPager) findViewById(R.id.main_ViewPager);
 
         fragmentList = new ArrayList<Fragment>() ;

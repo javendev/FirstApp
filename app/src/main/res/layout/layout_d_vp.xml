@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_centerInParent="true"
+    android:layout_gravity="center"
+    android:background="@null"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="15.0dip">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/zfyd2"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
+                android:src="@mipmap/zfyd1" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/zfyd2"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/vip_string1"
+                    android:textColor="#ffffffff"
+                    android:textSize="16.0dip" />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2.0dip"
+                    android:gravity="center"
+                    android:text="@string/vip_string2"
+                    android:textColor="#ffffffff"
+                    android:textSize="16.0dip" />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2.0dip"
+                    android:gravity="center"
+                    android:text="@string/vip_string3"
+                    android:textColor="#ffffffff"
+                    android:textSize="16.0dip" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10.0dip"
+                    android:layout_marginTop="10.0dip"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1.0"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/btn_m"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@drawable/btn_b_d2"
+                            android:text="     包月     "
+                            android:textColor="#ffcf5813"
+                            android:textSize="16.0dip" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="@string/vip_m_info"
+                            android:textColor="#ffcf5813"
+                            android:textSize="14.0dip" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1.0"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/btn_y"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@drawable/btn_b_d2"
+                            android:text="     包年     "
+                            android:textColor="#ffcf5813"
+                            android:textSize="16.0dip" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="@string/vip_y_info"
+                            android:textColor="#ffcf5813"
+                            android:textSize="14.0dip" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1.0"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/btn_n"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@drawable/btn_b_d2"
+                            android:text=" 终身免费 "
+                            android:textColor="#ffcf5813"
+                            android:textSize="16.0dip" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="@string/vip_n_info"
+                            android:textColor="#ffcf5813"
+                            android:textSize="14.0dip" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="25.0dip"
+            android:layout_gravity="center_horizontal"
+            android:background="#44000000">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/vip_show"
+                android:textColor="#88ffffff"
+                android:textSize="18.0sp" />
+
+            <ImageView
+                android:id="@+id/dv_x"
+                android:layout_width="20.0dip"
+                android:layout_height="20.0dip"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="5.0dip"
+                android:src="@mipmap/pay_dlg_close_f" />
+        </RelativeLayout>
+    </FrameLayout>
+</LinearLayout>
