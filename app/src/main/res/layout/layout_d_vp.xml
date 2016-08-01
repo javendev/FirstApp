@@ -16,7 +16,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@mipmap/zfyd2"
+            android:background="@drawable/zfyd2"
             android:orientation="vertical">
 
             <ImageView
@@ -24,13 +24,13 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
-                android:src="@mipmap/zfyd1" />
+                android:src="@drawable/zfyd1" />
 
             <LinearLayout
                 android:id="@+id/linearLayout1"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@mipmap/zfyd2"
+                android:background="@drawable/zfyd2"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -78,7 +78,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:background="@drawable/btn_b_d2"
-                            android:text="     包月     "
+                            android:text="     包季     "
                             android:textColor="#ffcf5813"
                             android:textSize="16.0dip" />
 
@@ -165,7 +165,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_margin="5.0dip"
-                android:src="@mipmap/pay_dlg_close_f" />
+                android:src="@drawable/pay_dlg_close_f" />
         </RelativeLayout>
     </FrameLayout>
 </LinearLayout>

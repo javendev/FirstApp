@@ -1,77 +1,106 @@
 package com.movieapp.fragment;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.load.engine.cache.DiskCache;
 import com.movieapp.R;
+import com.movieapp.eventbus.Event;
+import com.movieapp.mian.XYActivity;
+import com.movieapp.task.GetDiskCacheSizeTask;
+import com.movieapp.utils.PhoneHelper;
 import com.orhanobut.logger.Logger;
 
-public class FragmentFive extends Fragment implements View.OnClickListener{
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-    TextView settingPersonText;
+import java.io.File;
+import java.util.Map;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
+public class FragmentFive extends BaseFragment {
+    @BindView(R.id.id_settings_person_text)
+    TextView settingsPersonText;
+    @BindView(R.id.id_settings_person)
     RelativeLayout settingsPerson;
-    RelativeLayout settingPhone;
+    @BindView(R.id.id_settings_phone)
+    RelativeLayout settingsPhone;
+    @BindView(R.id.id_settings_protocol)
     RelativeLayout settingsProtocol;
-    RelativeLayout settingCleanCache;
-    RelativeLayout settingAboutus;
-    private Context mContext;
+    @BindView(R.id.id_settings_cacheSize)
+    TextView settingsCacheSize;
+    @BindView(R.id.id_settings_cleanCache)
+    RelativeLayout settingsCleanCache;
+    @BindView(R.id.id_settings_aboutus)
+    RelativeLayout settingsAboutus;
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        mContext = getActivity().getApplicationContext();
+    public View initView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.fragment_five, container, false);
-        initView(view);
+        ButterKnife.bind(this, view);
         return view;
     }
 
-    private  void initView(View view){
-        settingPersonText = (TextView) view.findViewById(R.id.id_settings_person_text);
-        settingsPerson = (RelativeLayout) view.findViewById(R.id.id_settings_person);
-        settingPhone = (RelativeLayout) view.findViewById(R.id.id_settings_phone);
-        settingCleanCache = (RelativeLayout) view.findViewById(R.id.id_settings_cleanCache);
-        settingsProtocol = (RelativeLayout) view.findViewById(R.id.id_settings_protocol);
-        settingAboutus = (RelativeLayout) view.findViewById(R.id.id_settings_aboutus);
-        settingsPerson.setOnClickListener(this);
-        settingPhone.setOnClickListener(this);
-        settingCleanCache.setOnClickListener(this);
-        settingsProtocol.setOnClickListener(this);
-        settingAboutus.setOnClickListener(this);
-    }
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void initData() {
+        new GetDiskCacheSizeTask(settingsCacheSize).execute(new File(DiskCache.Factory.DEFAULT_DISK_CACHE_DIR));
     }
 
+
+    @OnClick({R.id.id_settings_person, R.id.id_settings_phone, R.id.id_settings_protocol, R.id.id_settings_cleanCache, R.id.id_settings_aboutus})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.id_settings_person:
-                settingPersonText.setText("1234567890123456");
                 break;
             case R.id.id_settings_phone:
-                Logger.e("点击了..id_setting_phone");
+                new SweetAlertDialog(getActivity(), SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText(getResources().getString(R.string.setting_phone))
+                        .setContentText(getResources().getString(R.string.setting_email))
+                        .show();
                 break;
             case R.id.id_settings_protocol:
-                Logger.e("点击了..id_settings_protocol");
+                startActivity(new Intent(mContext, XYActivity.class));
                 break;
             case R.id.id_settings_cleanCache:
-                Logger.e("点击了..id_setting_cleanCache");
+
                 break;
             case R.id.id_settings_aboutus:
-                Logger.e("点击了..id_setting_aboutus");
+                final Map<String, Object> appInfoMap = PhoneHelper.getAppInfoMap(getActivity().getApplication());
+                new SweetAlertDialog(getActivity(), SweetAlertDialog.CUSTOM_IMAGE_TYPE)
+                        .setTitleText((String)appInfoMap.get("appName"))
+                        .setContentText((String)appInfoMap.get("versionName"))
+                        .setCustomImage((Drawable)appInfoMap.get("icon"))
+                        .show();
                 break;
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void buildUserEvent(Event.buildUserEvent event) {
+        Logger.i("FragmentFive 接收到的值："+event.userModel.getUserid());
+        Toast.makeText(mContext, "F获取到信息了", Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 }

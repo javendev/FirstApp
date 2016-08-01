@@ -13,7 +13,6 @@ import android.widget.Toast;
 import com.movieapp.R;
 import com.movieapp.utils.Res;
 import com.movieapp.view.UI;
-import com.orhanobut.logger.Logger;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
@@ -88,39 +87,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         int id = v.getId();
         switch (id){
             case R.id.id_paly_rlTop:
-                UI.showDialog(mContext,new UI.ItemOnListener(){
 
-                    @Override
-                    public void itemOnListener(View view) {
-                        Logger.i("点击了item");
-                    }
-
-                    @Override
-                    public void closeOnListener(View view) {
-                        Logger.i("点击了关闭");
-                        Toast.makeText(mContext,"点击了关闭",Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void btnOnListener(View view) {
-                        switch (view.getId()){
-                            case R.id.btn_m:
-                                Logger.i("包月");
-                                Toast.makeText(mContext,"点击了包月",Toast.LENGTH_LONG).show();
-                                break;
-                            case R.id.btn_y:
-                                Logger.i("包年");
-                                Toast.makeText(mContext,"点击了包年",Toast.LENGTH_LONG).show();
-                                break;
-                            case R.id.btn_n:
-                                Logger.i("终身");
-                                Toast.makeText(mContext,"点击了终身免费",Toast.LENGTH_LONG).show();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                });
+                UI.showPayDialog(mContext);
                 break;
         }
     }

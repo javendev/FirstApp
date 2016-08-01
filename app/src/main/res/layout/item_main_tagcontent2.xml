@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:id="@+id/id_tagcontent_rl_left"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/id_tagcontent_pic_left"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_test_4" />
+
+        <ImageView
+            android:id="@+id/id_tagcontent_vp_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/vp" />
+
+        <ImageView
+            android:id="@+id/id_tagcontent_hight_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/hight_img" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/id_tagcontent_pic_left"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/id_tagcontent_name_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="这是名称"
+                android:textSize="20dp" />
+            <TextView
+                android:id="@+id/id_tagcontent_desc_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="这是描述"
+                android:textSize="10dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/id_tagcontent_rl_right"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp">
+
+        <ImageView
+            android:id="@+id/id_tagcontent_pic_right"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_test_4" />
+
+        <ImageView
+            android:id="@+id/id_tagcontent_vp_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/vp" />
+
+        <ImageView
+            android:id="@+id/id_tagcontent_hight_left_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/hight_img" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/id_tagcontent_pic_right"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/id_tagcontent_name_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="影片名称"
+                android:textSize="20dp" />
+
+            <TextView
+                android:id="@+id/id_tagcontent_desc_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="这是描述"
+                android:textSize="10dp" />
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

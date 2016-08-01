@@ -1,17 +1,18 @@
 package com.movieapp.mian;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.movieapp.R;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
     private ImageView imageView;
     private Context mContext;
 
@@ -42,5 +43,21 @@ public class MainActivity extends Activity {
                 });
             }
         },1000);
+    }
+
+
+    /**
+     * startActivity屏蔽物理返回按钮
+     *
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

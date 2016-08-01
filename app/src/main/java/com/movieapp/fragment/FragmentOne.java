@@ -6,8 +6,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,48 +35,44 @@ import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
 import com.movieapp.R;
-import com.movieapp.service.impl.ImageServiceImpl;
-import com.movieapp.utils.Res;
+import com.movieapp.adapter.HomeTagsAdaper;
+import com.movieapp.bean.HomeTags;
+import com.movieapp.bean.MovieModel;
+import com.movieapp.bean.UserModel;
+import com.movieapp.eventbus.Event;
+import com.movieapp.widget.imageloader.Imageloader;
 import com.orhanobut.logger.Logger;
 import com.zhy.adapter.recyclerview.CommonAdapter;
-import com.zhy.adapter.recyclerview.base.ViewHolder;
 import com.zhy.adapter.recyclerview.wrapper.EmptyWrapper;
 import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
 import com.zhy.adapter.recyclerview.wrapper.LoadMoreWrapper;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListener, OnItemClickListener {
     private final static int LOADINGNOM_WHAT=0x123;
-
+    private Context mContext;
     private ConvenientBanner convenientBanner;
     private List<String> adLocalImages = new ArrayList<String>();
     private List<String> adLocalDescribes = new ArrayList<String>();
-
-    private List<Integer> images = new ArrayList<Integer>();
-    private List<String> describes = new ArrayList<String>();
     private List<String> transformerList = new ArrayList<String>();
 
     private RecyclerView mRecyclerView;
-    private CommonAdapter<String> mAdapter;
+    private HomeTagsAdaper mAdapter;
     private HeaderAndFooterWrapper mHeaderAndFooterWrapper;
     private LoadMoreWrapper mLoadMoreWrapper;
-
+    private List<HomeTags> mDates;
 
     private EmptyWrapper mEmptyWrapper;
     private View ad;
 
-    private ImageView loadingNom;
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-
-            if (msg.what==LOADINGNOM_WHAT){
-                loadingNom.setVisibility(View.GONE);
-                mRecyclerView.setVisibility(View.VISIBLE);
-            }
 
             super.handleMessage(msg);
         }
@@ -96,6 +92,7 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Logger.v("onCreateView");
+        mContext=getActivity().getApplicationContext();
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_one, container, false);
         initView(view);
@@ -104,10 +101,10 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
     }
 
     private void initView(View view){
-        loadingNom= (ImageView) view.findViewById(R.id.id_lading_nom);
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
 //        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
-        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplication()));
     }
 
 
@@ -123,7 +120,7 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
                     }
                 }, adLocalImages)
                 //设置两个点图片作为翻页指示器，不设置则没有指示器，可以根据自己需求自行配合自己的指示器,不需要圆点指示器可用不设
-                .setPageIndicator(new int[]{R.mipmap.ic_page_indicator, R.mipmap.ic_page_indicator_focused})
+                .setPageIndicator(new int[]{R.drawable.ic_page_indicator, R.drawable.ic_page_indicator_focused})
                 //设置指示器的方向
                 .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
                 .setManualPageable(true);//设置不能手动影响
@@ -131,31 +128,25 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
                  convenientBanner .setOnItemClickListener(this);
                  //设置滑动监听
                  convenientBanner.setOnPageChangeListener(this);
+        initDates();
+        mAdapter=new HomeTagsAdaper(getActivity().getApplicationContext(),mDates);
 
-        mAdapter=new CommonAdapter(getActivity().getApplication(),R.layout.item_list, images) {
-
-            @Override
-            protected void convert(ViewHolder holder, Object o, int position) {
-                holder.setImageResource(R.id.iv_pic, images.get(position-1));
-                holder.setText(R.id.tv_text, describes.get(position-1));
-            }
-        };
         initHeaderAndFooter();
         initEmptyView();
         mLoadMoreWrapper = new LoadMoreWrapper(mHeaderAndFooterWrapper);
 
         mRecyclerView.setAdapter(mLoadMoreWrapper);
 
-        mAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener<Integer>(){
-            @Override
-            public void onItemClick(View view, RecyclerView.ViewHolder holder, Integer o, int position){
-                Toast.makeText(getActivity().getApplicationContext(), "pos = " + (position-1), Toast.LENGTH_SHORT).show();
+        mAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener<HomeTags>(){
 
-//                mRecyclerView.getAdapter().notifyItemRemoved(position);
+            @Override
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, HomeTags o, int position) {
+                Toast.makeText(getActivity().getApplicationContext(), "Click:" + position + " => " + o.isTag(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, Integer o, int position){
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, HomeTags o, int position) {
+                Toast.makeText(getActivity().getApplicationContext(), "LongClick:" + position + " => " + o.isTag(), Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
@@ -164,6 +155,11 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
     @Override
     public void onItemClick(int position) {
         Logger.e("广告点击了："+position);
+
+        UserModel userModel = new UserModel();
+        userModel.setUserid("123466879");
+        EventBus.getDefault().post(new Event.buildUserEvent(userModel));
+
     }
 
     public class LocalImageHolderView implements Holder<String> {
@@ -179,9 +175,8 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
 
         @Override
         public void UpdateUI(Context context, final int position, String data) {
-//            imageView.setImageResource(data);
             textView.setText(adLocalDescribes.get(position));
-            ImageServiceImpl.getInstance(context).setImage(data,imageView,R.mipmap.ic_test_1);
+            Imageloader.getInstance(mContext).setImage(data,imageView,R.drawable.ic_test_2);
         }
     }
     private void initEmptyView(){
@@ -191,6 +186,39 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
     private void initHeaderAndFooter(){
         mHeaderAndFooterWrapper = new HeaderAndFooterWrapper(mAdapter);
         mHeaderAndFooterWrapper.addHeaderView(ad);
+    }
+
+
+    private void initDates() {
+        mDates = new ArrayList<HomeTags>();
+        HomeTags tags=new HomeTags();
+        tags.setTag(true);
+        tags.setTagName("高清");
+        mDates.add(tags);
+
+        tags= new HomeTags();
+        tags.setTag(false);
+        List<MovieModel> movies = new ArrayList<MovieModel>();
+        movies.add(new MovieModel("高清名称1","http://www.baidu.com","http://imgstore.cdn.sogou.com/app/a/100540002/714860.jpg","高清这是是否打算对方"));
+        movies.add(new MovieModel("高清名称2","http://www.baidu.com","http://img5.imgtn.bdimg.com/it/u=1390800033,3298177266&fm=206&gp=0.jpg","高清这是是否打算对方2"));
+        tags.setTagList(movies);
+        mDates.add(tags);
+
+        tags=new HomeTags();
+        tags.setTag(true);
+        tags.setTagName("VIP");
+        mDates.add(tags);
+
+        tags= new HomeTags();
+        tags.setTag(false);
+        movies = new ArrayList<MovieModel>();
+        movies.add(new MovieModel("VIP名称1","http://www.baidu.com","http://www.sucaitianxia.com/Photo/pic/201001/gefnegs37.jpg","VIP这是是否打算对方"));
+        movies.add(new MovieModel("VIP名称2","http://www.baidu.com","http://img.tuku.cn/file_big/201503/99ac63ce52d144218db0d18c5faf44ba.jpg","VIP这是是否打算对方2"));
+        movies.add(new MovieModel("VIP名称3","http://www.baidu.com","http://image.tianjimedia.com/uploadImages/2012/236/2H2TR02NKWAA.jpg","VIP这是是否打算对方3"));
+        movies.add(new MovieModel("VIP名称4","http://www.baidu.com","http://ww2.sinaimg.cn/large/4a8cd6e5jw9ekardhvkavj21e011iaod.jpg","VIP这是是否打算对方4"));
+        tags.setTagList(movies);
+        mDates.add(tags);
+
     }
     /*
    加入测试Views
@@ -205,12 +233,9 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
         adLocalImages.add("http://www.6188.com/upload_6188s/flashAll/s800/20120517/1337218925uatdTW.jpg");
         //本地图片集合
         for (int position = 0; position < 7; position++) {
-//            adLocalImages.add(Res.getResId("ic_test_" + position, R.mipmap.class));
+//            adLocalImages.add(Res.getResId("ic_test_" + position, R.drawable.class));
 
             adLocalDescribes.add("描述"+position);
-
-            images.add(Res.getResId("ic_test_" + position, R.mipmap.class));
-            describes.add("原始数据:"+position);
         }
 //        handler.sendEmptyMessageDelayed(LOADINGNOM_WHAT,3000);
     }

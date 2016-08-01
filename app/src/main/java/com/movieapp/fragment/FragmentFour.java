@@ -77,7 +77,7 @@ public class FragmentFour extends Fragment {
         describes = new ArrayList<>();
         //本地图片集合
         for (int position = 0; position < 10; position++) {
-            list.add(Res.getResId("ic_test_" + position, R.mipmap.class));
+            list.add(Res.getResId("ic_test_" + position, R.drawable.class));
             describes.add("原始数据"+position);
         }
         commonAdapter = new CommonAdapter<Integer>(mContext, R.layout.collects, list){
@@ -85,9 +85,9 @@ public class FragmentFour extends Fragment {
             @Override
             protected void convert(ViewHolder holder, Integer integer, int position) {
                 holder.setImageResource(R.id.id_collect_pic,list.get(position));
-                holder.setImageResource(R.id.id_collect_hight, R.mipmap.hight_img);
-                holder.setImageResource(R.id.id_collect_vp,R.mipmap.vp);
-                holder.setImageResource(R.id.id_collect_people,R.mipmap.people);
+                holder.setImageResource(R.id.id_collect_hight, R.drawable.hight_img);
+                holder.setImageResource(R.id.id_collect_vp,R.drawable.vp);
+                holder.setImageResource(R.id.id_collect_people,R.drawable.people);
                 holder.setText(R.id.id_collect_desc,describes.get(position));
                 holder.setText(R.id.id_collect_count,"200");
             }
@@ -137,7 +137,7 @@ public class FragmentFour extends Fragment {
 
     private void loadMore() {
         for (int i = 0; i < 10; i++){
-            list.add(R.mipmap.ic_test_6);
+            list.add(R.drawable.ic_test_6);
             describes.add("add:"+i);
         }
         recyclerview.getAdapter().notifyDataSetChanged();

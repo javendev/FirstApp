@@ -10,8 +10,10 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.movieapp.R;
+import com.orhanobut.logger.Logger;
 
 public class UI {
 
@@ -46,8 +48,10 @@ public class UI {
 		 int dispayWidth =metrics.widthPixels;
 		 int dispayHeight =metrics.heightPixels;
 		 
-		 params.width=(int)(dispayWidth * 0.9);
-		 params.height=(int)(dispayHeight* 0.9);
+//		 params.width=(int)(dispayWidth * 0.9);
+//		 params.height=(int)(dispayHeight* 0.9);
+		 params.width=dispayWidth;
+		 params.height=dispayHeight;
 		 dialog.setCanceledOnTouchOutside(false);
 		 dialog.setCancelable(false);
 		
@@ -113,4 +117,45 @@ public class UI {
 		float density = context.getResources().getDisplayMetrics().density;
 		return density;
 	}
+
+	/**
+	 * 支付弹窗
+	 * @param mContext
+     */
+	public static void showPayDialog(final Context mContext){
+		UI.showDialog(mContext,new UI.ItemOnListener(){
+
+			@Override
+			public void itemOnListener(View view) {
+				Logger.i("点击了item");
+			}
+
+			@Override
+			public void closeOnListener(View view) {
+				Logger.i("点击了关闭");
+				Toast.makeText(mContext,"点击了关闭",Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public void btnOnListener(View view) {
+				switch (view.getId()){
+					case R.id.btn_m:
+						Logger.i("包月");
+						Toast.makeText(mContext,"点击了包月",Toast.LENGTH_LONG).show();
+						break;
+					case R.id.btn_y:
+						Logger.i("包年");
+						Toast.makeText(mContext,"点击了包年",Toast.LENGTH_LONG).show();
+						break;
+					case R.id.btn_n:
+						Logger.i("终身");
+						Toast.makeText(mContext,"点击了终身免费",Toast.LENGTH_LONG).show();
+						break;
+					default:
+						break;
+				}
+			}
+		});
+	}
+
 }

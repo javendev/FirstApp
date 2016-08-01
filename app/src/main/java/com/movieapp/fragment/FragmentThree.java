@@ -48,7 +48,7 @@ public class FragmentThree extends Fragment {
         describes = new ArrayList<>();
         //本地图片集合
         for (int position = 0; position < 10; position++) {
-            list.add(Res.getResId("ic_test_" + position, R.mipmap.class));
+            list.add(Res.getResId("ic_test_" + position, R.drawable.class));
             describes.add("原始数据"+position);
         }
 
@@ -56,9 +56,9 @@ public class FragmentThree extends Fragment {
 
             @Override
             protected void convert(ViewHolder holder, Integer integer, int position) {
-                holder.setImageResource(R.id.id_vip_hight, R.mipmap.hight_img);
+                holder.setImageResource(R.id.id_vip_hight, R.drawable.hight_img);
                 holder.setImageResource(R.id.id_vip_pic,list.get(position));
-                holder.setImageResource(R.id.id_vip_vp,R.mipmap.vp);
+                holder.setImageResource(R.id.id_vip_vp,R.drawable.vp);
                 holder.setText(R.id.id_vip_describes,describes.get(position));
             }
         };

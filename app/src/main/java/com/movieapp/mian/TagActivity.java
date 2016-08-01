@@ -124,15 +124,15 @@ public class TagActivity extends AppCompatActivity {
         list=new ArrayList<>();
         describes=new ArrayList<>();
         for (int i = 0; i < 10; i++){
-            list.add(Res.getResId("ic_test_" + i, R.mipmap.class));
+            list.add(Res.getResId("ic_test_" + i, R.drawable.class));
             describes.add("默认的描述:"+i);
         }
-        handler.sendEmptyMessageDelayed(LOADINGNOM_WHAT,3000);
+        handler.sendEmptyMessageDelayed(LOADINGNOM_WHAT,1000);
     }
 
     private void loadMore() {
         for (int i = 0; i < 10; i++){
-            list.add(R.mipmap.ic_test_2);
+            list.add(R.drawable.ic_test_2);
             describes.add("add:"+i);
         }
         recyclerview.getAdapter().notifyDataSetChanged();
