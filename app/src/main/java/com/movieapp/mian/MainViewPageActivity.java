@@ -16,7 +16,7 @@ import com.movieapp.R;
 import com.movieapp.eventbus.Event;
 import com.movieapp.fragment.FragmentFive;
 import com.movieapp.fragment.FragmentFour;
-import com.movieapp.fragment.FragmentOne3;
+import com.movieapp.fragment.FragmentOne;
 import com.movieapp.fragment.FragmentThree;
 import com.movieapp.fragment.FragmentTwo;
 import com.orhanobut.logger.Logger;
@@ -65,8 +65,7 @@ public class MainViewPageActivity extends AppCompatActivity implements RadioGrou
     private void initView() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setLogo(R.drawable.head_logo);
-        mToolbar.setTitle(null);
-        mToolbar.setSubtitle(null);
+        mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
 
         main_tab_RadioGroup.setOnCheckedChangeListener(this);
@@ -75,7 +74,7 @@ public class MainViewPageActivity extends AppCompatActivity implements RadioGrou
     private void initViewPager() {
         fragmentList = new ArrayList<Fragment>();
 
-        oneFragment = new FragmentOne3();
+        oneFragment = new FragmentOne();
         twoFragment = new FragmentTwo();
         threeFragment = new FragmentThree();
         fourFragment = new FragmentFour();
@@ -200,7 +199,7 @@ public class MainViewPageActivity extends AppCompatActivity implements RadioGrou
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void buildUserEvent(Event.buildUserEvent event) {
-        Logger.i("Activity接收的值："+event.userModel.getUserid());
+        Logger.i("Activity接收的值："+event.getUserModel().getUserid());
         Toast.makeText(this, "获取到信息了", Toast.LENGTH_SHORT).show();
     }
 

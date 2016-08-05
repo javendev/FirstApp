@@ -1,8 +1,7 @@
 package com.movieapp.fragment;
 
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Message;
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -10,13 +9,24 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.movieapp.R;
+import com.movieapp.bean.CategoryModel;
+import com.movieapp.eventbus.Event;
 import com.movieapp.mian.TagActivity;
-import com.movieapp.utils.Res;
+import com.movieapp.service.IMoviceService;
+import com.movieapp.service.impl.MoviceServiceImpl;
+import com.movieapp.utils.CommonUtils;
+import com.movieapp.widget.imageloader.Imageloader;
+import com.orhanobut.logger.Logger;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +42,15 @@ public class FragmentTwo extends BaseFragment implements SwipeRefreshLayout.OnRe
     @BindView(R.id.id_swipe_refresh_widget)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    private List<Integer> list;
-    private List<String> describes;
+    private List<CategoryModel> categoryModels;
     CommonAdapter commonAdapter;
 
+    IMoviceService moviceService=new MoviceServiceImpl();
+
     public FragmentTwo() {
+
     }
+
 
 
     @Override
@@ -49,13 +62,8 @@ public class FragmentTwo extends BaseFragment implements SwipeRefreshLayout.OnRe
 
     @Override
     public void initData() {
-        list = new ArrayList<>();
-        describes = new ArrayList<>();
-        //本地图片集合
-        for (int position = 0; position < 9; position++) {
-            list.add(Res.getResId("ic_test_" + position, R.drawable.class));
-            describes.add("原始数据" + position);
-        }
+        categoryModels = new ArrayList<CategoryModel>();
+        loadData(false);
     }
 
     @Override
@@ -74,50 +82,71 @@ public class FragmentTwo extends BaseFragment implements SwipeRefreshLayout.OnRe
 
         recyclerview.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 
-
-        commonAdapter = new CommonAdapter<Integer>(mContext, R.layout.item_tags_content, list) {
+        commonAdapter = new CommonAdapter<CategoryModel>(mContext, R.layout.item_tags_content, categoryModels) {
 
             @Override
-            protected void convert(ViewHolder holder, Integer integer, int position) {
-                holder.setImageResource(R.id.id_tags_pic, list.get(position));
-                holder.setText(R.id.id_tag_tv, describes.get(position));
+            protected void convert(ViewHolder holder, CategoryModel categoryModel, int position) {
+                //                holder.setImageResource(R.id.id_tags_pic, list.get(position));
+                ImageView view = holder.getView(R.id.id_tags_pic);
+                Imageloader.getInstance(mContext).setImage(categoryModel.getIccon(),view,R.drawable.default_item_picture);
+                holder.setText(R.id.id_tag_tv, categoryModel.getCategoryname());
             }
         };
 
         commonAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, Object o, int position) {
-                Toast.makeText(mContext, "onItemClick position:" + position + "内容:" + o.toString(), Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(mContext, TagActivity.class));
+                CategoryModel category= (CategoryModel) o;
+                Logger.i("对象："+category.toString());
+                Intent intent = new Intent(mContext, TagActivity.class);
+                intent.putExtra("categoryid",category.getCategoryid());
+                startActivity(intent);
             }
 
             @Override
             public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, Object o, int position) {
-                Toast.makeText(mContext, "onItemLongClick position:" + position + "内容:" + o.toString(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mContext, "onItemLongClick position:" + position + "内容:" + o.toString(), Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
         recyclerview.setAdapter(commonAdapter);
     }
 
-
-
     @Override
     public void onRefresh() {
-        handler.sendEmptyMessageDelayed(0, 3000);
-
-        System.out.println("onRefresh()。。。。。");
+        loadData(true);
     }
 
-    Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            swipeRefreshLayout.setRefreshing(false);
-            list.add(0,R.drawable.ic_test_0);
-            describes.add(0,"刷新添加的数据");
+    //加载数据
+    public  void loadData(boolean isRefresh){
+        moviceService.getAllCategory(getActivity().getApplication(), CommonUtils.APPID,isRefresh);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void getCategoryEvent(Event.getCategoryEvent event) {
+        boolean isRefresh=event.isRefresh();
+        List<CategoryModel> categorys = event.getCategoryModels();
+        if (categorys!=null && categorys.size()>0){
+            categoryModels.clear();
+            categoryModels.addAll(categorys);
+            if (isRefresh){
+                swipeRefreshLayout.setRefreshing(false);
+            }
             recyclerview.getAdapter().notifyDataSetChanged();
+            Toast.makeText(mContext, "数据刷新完成...", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(mContext, "出现错误了", Toast.LENGTH_SHORT).show();
         }
-    };
+    }
 
-
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
 }

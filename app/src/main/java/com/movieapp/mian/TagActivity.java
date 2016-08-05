@@ -3,8 +3,6 @@ package com.movieapp.mian;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,7 +13,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.movieapp.R;
-import com.movieapp.utils.Res;
+import com.movieapp.bean.MovieModel;
+import com.movieapp.bean.Page;
+import com.movieapp.eventbus.Event;
+import com.movieapp.service.IMoviceService;
+import com.movieapp.service.impl.MoviceServiceImpl;
+import com.movieapp.utils.CommonUtils;
+import com.movieapp.widget.imageloader.Imageloader;
+import com.orhanobut.logger.Logger;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
@@ -23,16 +28,23 @@ import com.zhy.adapter.recyclerview.wrapper.EmptyWrapper;
 import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
 import com.zhy.adapter.recyclerview.wrapper.LoadMoreWrapper;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class TagActivity extends AppCompatActivity {
+    private final static int LOAD_FIRST=0x456;
+    private final static int LOAD_MORE=0x457;
     private final static int LOADMORE_WHAT=0x458;
     private final static int LOADINGNOM_WHAT=0x459;
     private Context mContext;
     private RecyclerView recyclerview;
-    private List<Integer> list;
-    private List<String> describes;
+//    private List<Integer> list;
+//    private List<String> describes;
+    private List<MovieModel> movies;
     CommonAdapter commonAdapter;
 
 
@@ -41,27 +53,30 @@ public class TagActivity extends AppCompatActivity {
     private EmptyWrapper mEmptyWrapper;
     private ImageView loadingNom;
 
-
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what==LOADINGNOM_WHAT){
-                loadingNom.setVisibility(View.GONE);
-                recyclerview.setVisibility(View.VISIBLE);
-            }else if (msg.what==LOADMORE_WHAT){
-                loadMore();
-            }
-            super.handleMessage(msg);
-        }
-    };
+    int categoryid;
+    Page page;
+    IMoviceService moviceService=new MoviceServiceImpl();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tag);
         mContext=this;
+        EventBus.getDefault().register(this);
+        Bundle extras = getIntent().getExtras();
+        if (extras!=null){
+            categoryid= extras.getInt("categoryid");
+            Logger.i("传过来的categoryid："+categoryid);
+        }
         initData();
         initView();
+    }
+    private void initData() {
+        page=new Page();
+        page.setPageNumber(1);
+        page.setPageSize(4);
+        movies =new ArrayList<MovieModel>();
+        loadData(page.getPageNumber(),LOAD_FIRST);
     }
 
     private void initView() {
@@ -72,13 +87,14 @@ public class TagActivity extends AppCompatActivity {
         //添加动画
         recyclerview.setItemAnimator(new DefaultItemAnimator());
 
-        commonAdapter = new CommonAdapter<Integer>(mContext, R.layout.item_tagslist_contnet, list){
+        commonAdapter = new CommonAdapter<MovieModel>(mContext, R.layout.item_tagslist_contnet, movies){
 
             @Override
-            protected void convert(ViewHolder holder, Integer integer, int position) {
-                holder.setImageResource(R.id.id_tags_list_pic,list.get(position));
-                holder.setText(R.id.id_tags_list_desc,describes.get(position));
-                holder.setText(R.id.id_tags_list_desc2,"200");
+            protected void convert(ViewHolder holder, MovieModel movieModel, int position) {
+                ImageView view=holder.getView(R.id.id_tags_list_pic);
+                Imageloader.getInstance(mContext).setImage(movieModel.getFenleiLink(),view,R.drawable.default_item_picture);
+                holder.setText(R.id.id_tags_list_desc,movieModel.getTitle());
+                holder.setText(R.id.id_tags_list_desc2,movieModel.getDescription());
             }
         };
         commonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
@@ -103,14 +119,23 @@ public class TagActivity extends AppCompatActivity {
         mLoadMoreWrapper.setOnLoadMoreListener(new LoadMoreWrapper.OnLoadMoreListener(){
             @Override
             public void onLoadMoreRequested(){
-                handler.sendEmptyMessageDelayed(LOADMORE_WHAT,3000);
+                int size = movies.size();
+                if (size>0){
+                    Logger.i("pageNumber>>>"+page.getPageNumber());
+                    loadData(page.getPageNumber(),LOAD_MORE);
+                }
+
             }
         });
-//        recyclerview.setAdapter(commonAdapter);
-        //加载更多
-        recyclerview.setAdapter(mLoadMoreWrapper);
-        //无数据时
-//        recyclerview.setAdapter(mEmptyWrapper);
+        //recyclerview.setAdapter(commonAdapter);
+        if (movies ==null ||  movies.size()<=0){
+            //无数据时
+           recyclerview.setAdapter(mEmptyWrapper);
+        }else {
+            //加载更多
+            recyclerview.setAdapter(mLoadMoreWrapper);
+        }
+
     }
 
     private void initEmptyView(){
@@ -120,21 +145,39 @@ public class TagActivity extends AppCompatActivity {
     private void initHeaderAndFooter(){
         mHeaderAndFooterWrapper = new HeaderAndFooterWrapper(commonAdapter);
     }
-    private void initData() {
-        list=new ArrayList<>();
-        describes=new ArrayList<>();
-        for (int i = 0; i < 10; i++){
-            list.add(Res.getResId("ic_test_" + i, R.drawable.class));
-            describes.add("默认的描述:"+i);
+
+
+    //加载数据
+    public  void loadData(int pageNumber,int type){
+        if (type==LOAD_MORE){
+            pageNumber=pageNumber+1;
         }
-        handler.sendEmptyMessageDelayed(LOADINGNOM_WHAT,1000);
+        moviceService.getMoviesByCategoryId(mContext,CommonUtils.APPID,categoryid,pageNumber,page.getPageSize(),type);
     }
 
-    private void loadMore() {
-        for (int i = 0; i < 10; i++){
-            list.add(R.drawable.ic_test_2);
-            describes.add("add:"+i);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void getMoviceByCategoryId(Event.getMoviceByCategoryId event) {
+        int type=event.getType();
+        page=event.getPage();
+        List<MovieModel> movieModels = page.getList();
+        if (movieModels!=null && movieModels.size()>0){
+            movies.addAll(movieModels);
+            if (type==LOAD_FIRST){
+                loadingNom.setVisibility(View.GONE);
+                recyclerview.setVisibility(View.VISIBLE);
+            }
+            //如果是最后一页就去掉加载更多
+            if (page.isLastPage()){
+                recyclerview.setAdapter(commonAdapter);
+            }
+            recyclerview.getAdapter().notifyDataSetChanged();
+        }else {
+            Toast.makeText(mContext, "出现错误了", Toast.LENGTH_SHORT).show();
         }
-        recyclerview.getAdapter().notifyDataSetChanged();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

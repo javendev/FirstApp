@@ -47,15 +47,15 @@ public class TagsContentItemDelagate implements ItemViewDelegate<HomeTags> {
                 holder.setImageResource(R.id.id_tagcontent_pic,R.drawable.ic_test_1);
                 else
                     holder.setImageResource(R.id.id_tagcontent_pic,R.drawable.ic_test_2);
-                holder.setText(R.id.id_tagcontent_name,movie.getName());
-                holder.setText(R.id.id_tagcontent_desc,movie.getDesc());
+                holder.setText(R.id.id_tagcontent_name,movie.getTitle());
+                holder.setText(R.id.id_tagcontent_desc,movie.getDescription());
             }
         };
         mAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener<MovieModel>() {
 
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, MovieModel o, int position) {
-                Logger.i(o.getImageUrl());
+                Logger.i(o.getFenleiLink());
             }
 
             @Override

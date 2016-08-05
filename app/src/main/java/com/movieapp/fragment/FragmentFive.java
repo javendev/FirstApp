@@ -2,6 +2,7 @@ package com.movieapp.fragment;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.load.engine.cache.DiskCache;
 import com.movieapp.R;
+import com.movieapp.bean.UserModel;
 import com.movieapp.eventbus.Event;
 import com.movieapp.mian.XYActivity;
 import com.movieapp.task.GetDiskCacheSizeTask;
@@ -20,8 +22,10 @@ import com.orhanobut.logger.Logger;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.litepal.crud.DataSupport;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -63,6 +67,13 @@ public class FragmentFive extends BaseFragment {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.id_settings_person:
+                UserModel userModel=new UserModel();
+                userModel.setUserid("987456123");
+                userModel.setChannelid("cp1001");
+                userModel.setValiddate("2015-07-06");
+                userModel.save();
+
+
                 break;
             case R.id.id_settings_phone:
                 new SweetAlertDialog(getActivity(), SweetAlertDialog.NORMAL_TYPE)
@@ -74,7 +85,12 @@ public class FragmentFive extends BaseFragment {
                 startActivity(new Intent(mContext, XYActivity.class));
                 break;
             case R.id.id_settings_cleanCache:
+//                List<UserModel> users = DataSupport.where("id=?", "987456123").find(UserModel.class);
+                List<UserModel> users = DataSupport.findAll(UserModel.class);
 
+                for (UserModel user:users) {
+                    Logger.i(user.toString());
+                }
                 break;
             case R.id.id_settings_aboutus:
                 final Map<String, Object> appInfoMap = PhoneHelper.getAppInfoMap(getActivity().getApplication());
@@ -89,13 +105,20 @@ public class FragmentFive extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void buildUserEvent(Event.buildUserEvent event) {
-        Logger.i("FragmentFive 接收到的值："+event.userModel.getUserid());
+        Logger.i("FragmentFive 接收到的值："+event.getUserModel().getUserid());
         Toast.makeText(mContext, "F获取到信息了", Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+
     }
 
     @Override

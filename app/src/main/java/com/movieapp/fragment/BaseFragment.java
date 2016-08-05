@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 
 import com.movieapp.view.UI;
 
-import org.greenrobot.eventbus.EventBus;
-
 /**
  * Created by Javen on 2016/7/28.
  */
@@ -35,8 +33,6 @@ public abstract class BaseFragment extends Fragment {
         mActivity = getActivity();
         mContext=mActivity.getApplicationContext();
         View view = initView(inflater,container);
-//        initFindViewById(view);
-
         return view;
     }
 
@@ -54,7 +50,7 @@ public abstract class BaseFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         initData();
         initEvent();
-        showPayDialog();
+//        showPayDialog();
 
     }
 
@@ -69,16 +65,11 @@ public abstract class BaseFragment extends Fragment {
      */
     public abstract View initView(LayoutInflater inflater, ViewGroup container);
 
-    /**
-     * 初始化控件
-     */
-//    protected abstract void initFindViewById(View view);
+
 
     /**
      * 子类在此方法中实现数据的初始化
      */
     public  abstract void initData() ;
-
-
 
 }
