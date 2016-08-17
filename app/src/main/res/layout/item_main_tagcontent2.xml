@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:layout_marginTop="10dp">
 
     <RelativeLayout
         android:id="@+id/id_tagcontent_rl_left"
@@ -42,12 +43,16 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:text="这是名称"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:textSize="20dp" />
             <TextView
                 android:id="@+id/id_tagcontent_desc_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:text="这是描述"
                 android:textSize="10dp" />
         </LinearLayout>
@@ -58,7 +63,8 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp">
+        android:layout_marginLeft="10dp"
+        >
 
         <ImageView
             android:id="@+id/id_tagcontent_pic_right"
@@ -92,6 +98,8 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:text="影片名称"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:textSize="20dp" />
 
             <TextView
@@ -100,6 +108,8 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:text="这是描述"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:textSize="10dp" />
         </LinearLayout>
     </RelativeLayout>

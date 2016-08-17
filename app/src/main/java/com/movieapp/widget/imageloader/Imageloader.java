@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.movieapp.R;
 
@@ -79,6 +80,7 @@ public class Imageloader{
                 .into(target);
     }
 
+    //本地的视频文件才有效String filePath = "/storage/emulated/0/Pictures/example_video.mp4";
     public void setImageVideo(String filePath, ImageView imageView, int defaultImage) {
         Glide.with(mContext)
                 .load(Uri.fromFile(new File(filePath)))
@@ -92,6 +94,7 @@ public class Imageloader{
         Glide.with(mContext)
                 .load(gifUrl)
                 .asGif()
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .centerCrop()
                 .error( R.drawable.default_item_picture )
                 .into( imageView );
@@ -101,6 +104,7 @@ public class Imageloader{
         Glide.with(mContext)
                 .load(resId)
                 .asGif()
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .centerCrop()
                 .error(R.drawable.default_item_picture)
                 .into(imageView);

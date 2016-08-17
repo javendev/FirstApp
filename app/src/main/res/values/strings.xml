@@ -28,5 +28,8 @@
     <string name="setting_protocol">用户协议</string>
     <string name="setting_cleanCache">清楚缓存</string>
     <string name="setting_aboutus">关于我们</string>
+    <string name="title_activity_user">UserActivity</string>
+    <string name="setting_vip">VIP等级</string>
+    <string name="play_count">播放量:%1$d万</string>
 
 </resources>

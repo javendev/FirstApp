@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="40dp"
+    >
 
     <TextView
         android:id="@+id/id_ch_name"
@@ -14,4 +14,25 @@
         android:paddingLeft="8.0dip"
         android:text="高清VIP"
         android:textColor="@android:color/holo_blue_bright" />
-</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/id_tagname_more"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/setting_next"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:padding="10dp"
+            android:text="更多"/>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -2,6 +2,7 @@ package com.movieapp.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -16,6 +17,15 @@ import com.movieapp.view.UI;
 public abstract class BaseFragment extends Fragment {
     public Context mContext;
     public FragmentActivity mActivity;
+
+    /**
+     * 控件是否初始化完成
+     */
+    private boolean isViewCreated;
+    /**
+     * 数据是否已加载完毕
+     */
+    private boolean isLoadDataCompleted;
     /**
      * 此方法可以得到上下文对象
      */
@@ -35,25 +45,35 @@ public abstract class BaseFragment extends Fragment {
         View view = initView(inflater,container);
         return view;
     }
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isViewCreated && !isLoadDataCompleted) {
+            isLoadDataCompleted = true;
+            loadData();
+        }
+    }
+    /*
+    * 当Activity初始化之后可以在这里进行一些数据的初始化操作
+    */
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initData();
+        initEvent();
+
+        if (getUserVisibleHint()) {
+            isLoadDataCompleted = true;
+            showPayDialog();
+            loadData();
+        }
+    }
 
     /**
      * 子类可以复写此方法初始化事件
      */
     protected  void initEvent(){
     }
-
-    /*
-     * 当Activity初始化之后可以在这里进行一些数据的初始化操作
-     */
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        initData();
-        initEvent();
-//        showPayDialog();
-
-    }
-
     private void showPayDialog() {
         UI.showPayDialog(mContext);
     }
@@ -64,12 +84,12 @@ public abstract class BaseFragment extends Fragment {
      * @return
      */
     public abstract View initView(LayoutInflater inflater, ViewGroup container);
-
-
-
     /**
      * 子类在此方法中实现数据的初始化
      */
     public  abstract void initData() ;
-
+    /**
+     * 子类实现加载数据的方法
+     */
+    public abstract  void loadData();
 }

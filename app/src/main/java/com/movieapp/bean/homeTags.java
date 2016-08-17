@@ -8,6 +8,7 @@ import java.util.List;
 public class HomeTags {
     private boolean isTag;
     private String tagName;
+    private int categoryId;
     private List<MovieModel> tagList;
 
     public boolean isTag() {
@@ -34,4 +35,11 @@ public class HomeTags {
         this.tagList = tagList;
     }
 
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
 }

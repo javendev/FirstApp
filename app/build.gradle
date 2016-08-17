@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.movieapp"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -42,4 +42,6 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.google.code.gson:gson:2.7'
     compile 'org.litepal.android:core:1.3.2'
+    compile project(':vitamio')
+    compile 'com.github.ctiao:DanmakuFlameMaster:0.4.5'
 }

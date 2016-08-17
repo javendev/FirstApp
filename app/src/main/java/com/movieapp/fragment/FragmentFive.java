@@ -8,24 +8,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.load.engine.cache.DiskCache;
 import com.movieapp.R;
 import com.movieapp.bean.UserModel;
 import com.movieapp.eventbus.Event;
+import com.movieapp.mian.UserActivity;
 import com.movieapp.mian.XYActivity;
-import com.movieapp.task.GetDiskCacheSizeTask;
+import com.movieapp.service.IMoviceService;
+import com.movieapp.service.impl.MoviceServiceImpl;
+import com.movieapp.utils.CommonUtils;
 import com.movieapp.utils.PhoneHelper;
-import com.orhanobut.logger.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.litepal.crud.DataSupport;
 
-import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -34,21 +31,22 @@ import butterknife.OnClick;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class FragmentFive extends BaseFragment {
-    @BindView(R.id.id_settings_person_text)
-    TextView settingsPersonText;
-    @BindView(R.id.id_settings_person)
-    RelativeLayout settingsPerson;
-    @BindView(R.id.id_settings_phone)
-    RelativeLayout settingsPhone;
-    @BindView(R.id.id_settings_protocol)
-    RelativeLayout settingsProtocol;
-    @BindView(R.id.id_settings_cacheSize)
-    TextView settingsCacheSize;
-    @BindView(R.id.id_settings_cleanCache)
-    RelativeLayout settingsCleanCache;
-    @BindView(R.id.id_settings_aboutus)
-    RelativeLayout settingsAboutus;
 
+
+    @BindView(R.id.tv_user)
+    TextView tvUser;
+    @BindView(R.id.rl_user)
+    RelativeLayout rlUser;
+    @BindView(R.id.rl_phone)
+    RelativeLayout rlPhone;
+    @BindView(R.id.rl_xy)
+    RelativeLayout rlXy;
+//    @BindView(R.id.rl_hc)
+//    RelativeLayout rlHc;
+    @BindView(R.id.rl_us)
+    RelativeLayout rlUs;
+
+    IMoviceService moviceService;
 
     @Override
     public View initView(LayoutInflater inflater, ViewGroup container) {
@@ -59,54 +57,21 @@ public class FragmentFive extends BaseFragment {
 
     @Override
     public void initData() {
-        new GetDiskCacheSizeTask(settingsCacheSize).execute(new File(DiskCache.Factory.DEFAULT_DISK_CACHE_DIR));
+        if(moviceService== null){
+            moviceService = new MoviceServiceImpl(mContext);
+        }
+//        new GetDiskCacheSizeTask(tvUser).execute(new File(getCacheDir(), DiskCache.Factory.DEFAULT_DISK_CACHE_DIR));
     }
 
-
-    @OnClick({R.id.id_settings_person, R.id.id_settings_phone, R.id.id_settings_protocol, R.id.id_settings_cleanCache, R.id.id_settings_aboutus})
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.id_settings_person:
-                UserModel userModel=new UserModel();
-                userModel.setUserid("987456123");
-                userModel.setChannelid("cp1001");
-                userModel.setValiddate("2015-07-06");
-                userModel.save();
-
-
-                break;
-            case R.id.id_settings_phone:
-                new SweetAlertDialog(getActivity(), SweetAlertDialog.NORMAL_TYPE)
-                        .setTitleText(getResources().getString(R.string.setting_phone))
-                        .setContentText(getResources().getString(R.string.setting_email))
-                        .show();
-                break;
-            case R.id.id_settings_protocol:
-                startActivity(new Intent(mContext, XYActivity.class));
-                break;
-            case R.id.id_settings_cleanCache:
-//                List<UserModel> users = DataSupport.where("id=?", "987456123").find(UserModel.class);
-                List<UserModel> users = DataSupport.findAll(UserModel.class);
-
-                for (UserModel user:users) {
-                    Logger.i(user.toString());
-                }
-                break;
-            case R.id.id_settings_aboutus:
-                final Map<String, Object> appInfoMap = PhoneHelper.getAppInfoMap(getActivity().getApplication());
-                new SweetAlertDialog(getActivity(), SweetAlertDialog.CUSTOM_IMAGE_TYPE)
-                        .setTitleText((String)appInfoMap.get("appName"))
-                        .setContentText((String)appInfoMap.get("versionName"))
-                        .setCustomImage((Drawable)appInfoMap.get("icon"))
-                        .show();
-                break;
-        }
+    @Override
+    public void loadData() {
+        moviceService.buildUser(mContext, CommonUtils.GET_BUILD_USER_URL);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void buildUserEvent(Event.buildUserEvent event) {
-        Logger.i("FragmentFive 接收到的值："+event.getUserModel().getUserid());
-        Toast.makeText(mContext, "F获取到信息了", Toast.LENGTH_SHORT).show();
+    public void getUserEvent(Event.getUserEvent event) {
+        UserModel userModel = event.getUserModel();
+        tvUser.setText(userModel.getUserid());
     }
 
     @Override
@@ -118,12 +83,43 @@ public class FragmentFive extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
         super.onDestroy();
+    }
+
+    @OnClick({R.id.rl_user, R.id.rl_phone, R.id.rl_xy, R.id.rl_us})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.rl_user:
+                String userId = tvUser.getText().toString();
+                if (userId!=null) {
+                    Intent intent = new Intent(mContext, UserActivity.class);
+                    intent.putExtra("userId", userId);
+                    startActivity(intent);
+                }
+                break;
+            case R.id.rl_phone:
+                new SweetAlertDialog(getActivity(), SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText(getResources().getString(R.string.setting_phone))
+                        .setContentText(getResources().getString(R.string.setting_email))
+                        .show();
+                break;
+            case R.id.rl_xy:
+                startActivity(new Intent(mContext, XYActivity.class));
+                break;
+
+            case R.id.rl_us:
+                final Map<String, Object> appInfoMap = PhoneHelper.getAppInfoMap(getActivity().getApplication());
+                new SweetAlertDialog(getActivity(), SweetAlertDialog.CUSTOM_IMAGE_TYPE)
+                        .setTitleText((String) appInfoMap.get("appName"))
+                        .setContentText((String) appInfoMap.get("versionName"))
+                        .setCustomImage((Drawable) appInfoMap.get("icon"))
+                        .show();
+                break;
+        }
     }
 }

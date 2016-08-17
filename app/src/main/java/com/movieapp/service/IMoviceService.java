@@ -2,14 +2,12 @@ package com.movieapp.service;
 
 import android.content.Context;
 
-import java.util.HashMap;
-
 /**
  * Created by Javen on 2016/7/28.
  */
 public interface IMoviceService {
     public void getUserById(Context context,String  url,String userId);
-    public void buildUser(Context context, String  url,HashMap<String,Object> params );
+    public void buildUser(Context context, String  url);
 
     /**
      * 根据appId获取所有分类
@@ -35,7 +33,7 @@ public interface IMoviceService {
      * @param pageNumber
      * @param pageSize
      */
-    public void getRankMovices(Context context,String appId,int rankType,int pageNumber ,int pageSize);
+    public void getRankMovices(Context context,String appId,int rankType,int pageNumber ,int pageSize,int type);
 
     /**
      * 查询影片资源（id，名称，描述（模糊查询）等）
@@ -45,4 +43,7 @@ public interface IMoviceService {
      * @param description
      */
     public void getMovice(Context context,int id,String title,String description);
+
+    public void getMain(Context context);
+    public void getFour(Context context,int videoId);
 }

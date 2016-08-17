@@ -1,77 +1,98 @@
 package com.movieapp.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.movieapp.R;
-import com.movieapp.utils.Res;
+import com.movieapp.bean.MovieModel;
+import com.movieapp.bean.Page;
+import com.movieapp.eventbus.Event;
+import com.movieapp.service.IMoviceService;
+import com.movieapp.service.LogicService;
+import com.movieapp.service.impl.MoviceServiceImpl;
+import com.movieapp.utils.CommonUtils;
+import com.movieapp.widget.imageloader.Imageloader;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentThree extends Fragment {
-    private Context mContext;
-    private RecyclerView recyclerview;
-    private List<Integer> list;
-    private List<String> describes;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class FragmentThree extends BaseFragment {
+    @BindView(R.id.id_recyclerview)
+    RecyclerView recyclerview;
+
+    private List<MovieModel> vipList;
     CommonAdapter mAdapter;
-
+    Page page;
+    private final static  int pageSize=50;
+    IMoviceService moviceService;
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        mContext=getActivity().getApplicationContext();
-        View view=inflater.inflate(R.layout.fragment_third, container, false);
-        initView(view);
+    public View initView(LayoutInflater inflater, ViewGroup container) {
+        View view = inflater.inflate(R.layout.fragment_third, container, false);
+        ButterKnife.bind(this, view);
         return view;
     }
-    private void initView(View view) {
-        recyclerview = (RecyclerView) view.findViewById(R.id.id_recyclerview);
+
+    @Override
+    public void initData() {
+        if (vipList == null){
+            vipList = new ArrayList<>();
+        }
+        if (page == null){
+            page=new Page();
+            page.setPageNumber(1);
+            page.setPageSize(pageSize);
+        }
+        if (moviceService == null){
+            moviceService=new MoviceServiceImpl(mContext);
+        }
+    }
+
+    @Override
+    public void loadData() {
+        loadData(page.getPageNumber());
+    }
+
+
+    @Override
+    protected void initEvent() {
         LinearLayoutManager linear = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
         recyclerview.setLayoutManager(linear);
-        list = new ArrayList<>();
-        describes = new ArrayList<>();
-        //本地图片集合
-        for (int position = 0; position < 10; position++) {
-            list.add(Res.getResId("ic_test_" + position, R.drawable.class));
-            describes.add("原始数据"+position);
-        }
 
-        mAdapter= new CommonAdapter<Integer>(mContext, R.layout.item_vip_content, list){
-
+        mAdapter = new CommonAdapter<MovieModel>(mContext, R.layout.item_vip_content, vipList) {
             @Override
-            protected void convert(ViewHolder holder, Integer integer, int position) {
+            protected void convert(ViewHolder holder, MovieModel movieModel, int position) {
                 holder.setImageResource(R.id.id_vip_hight, R.drawable.hight_img);
-                holder.setImageResource(R.id.id_vip_pic,list.get(position));
-                holder.setImageResource(R.id.id_vip_vp,R.drawable.vp);
-                holder.setText(R.id.id_vip_describes,describes.get(position));
+                holder.setImageResource(R.id.id_vip_vp, R.drawable.vp);
+                ImageView view = holder.getView(R.id.id_vip_pic);
+                Imageloader.getInstance(mContext).setImage(movieModel.getPiclink(),view,R.drawable.default_item_picture);
+                holder.setText(R.id.id_vip_describes, movieModel.getDescription());
             }
         };
 
-        mAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+        mAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener<MovieModel>() {
             @Override
-            public void onItemClick(View view, RecyclerView.ViewHolder holder, Object o, int position) {
-                Toast.makeText(mContext, "onItemClick position:" + position + "内容:" + o.toString(), Toast.LENGTH_SHORT).show();
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, MovieModel movie, int position) {
+                LogicService.getInstance(mContext).toPlayActivity(movie);
             }
 
             @Override
-            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, Object o, int position) {
-                Toast.makeText(mContext, "onItemLongClick position:" + position + "内容:" + o.toString(), Toast.LENGTH_SHORT).show();
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, MovieModel movie, int position) {
                 return true;
             }
         });
@@ -88,5 +109,34 @@ public class FragmentThree extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
+    }
+
+    //加载数据
+    public  void loadData(int pageNumber){
+        moviceService.getRankMovices(mContext, CommonUtils.APPID,CommonUtils.TANK_TYPE_VIP,pageNumber,page.getPageSize(),0);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void getRankMovicesChoice(Event.getRankMovicesChoice event) {
+        page=event.getPage();
+        List<MovieModel> movieModels = page.getList();
+        if (movieModels!=null && movieModels.size()>0){
+            vipList.addAll(movieModels);
+            recyclerview.getAdapter().notifyDataSetChanged();
+        }else {
+            Toast.makeText(mContext, "出现错误了", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

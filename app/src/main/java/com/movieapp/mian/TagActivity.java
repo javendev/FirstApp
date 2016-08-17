@@ -1,7 +1,6 @@
 package com.movieapp.mian;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -17,10 +16,10 @@ import com.movieapp.bean.MovieModel;
 import com.movieapp.bean.Page;
 import com.movieapp.eventbus.Event;
 import com.movieapp.service.IMoviceService;
+import com.movieapp.service.LogicService;
 import com.movieapp.service.impl.MoviceServiceImpl;
 import com.movieapp.utils.CommonUtils;
 import com.movieapp.widget.imageloader.Imageloader;
-import com.orhanobut.logger.Logger;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
@@ -38,15 +37,11 @@ import java.util.List;
 public class TagActivity extends AppCompatActivity {
     private final static int LOAD_FIRST=0x456;
     private final static int LOAD_MORE=0x457;
-    private final static int LOADMORE_WHAT=0x458;
-    private final static int LOADINGNOM_WHAT=0x459;
+    private final static  int pageSize=4;
     private Context mContext;
     private RecyclerView recyclerview;
-//    private List<Integer> list;
-//    private List<String> describes;
     private List<MovieModel> movies;
     CommonAdapter commonAdapter;
-
 
     private LoadMoreWrapper mLoadMoreWrapper;
     private HeaderAndFooterWrapper mHeaderAndFooterWrapper;
@@ -55,18 +50,21 @@ public class TagActivity extends AppCompatActivity {
 
     int categoryid;
     Page page;
-    IMoviceService moviceService=new MoviceServiceImpl();
+
+    IMoviceService moviceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tag);
         mContext=this;
+        if(moviceService == null){
+            moviceService =new MoviceServiceImpl(mContext);
+        }
         EventBus.getDefault().register(this);
         Bundle extras = getIntent().getExtras();
         if (extras!=null){
             categoryid= extras.getInt("categoryid");
-            Logger.i("传过来的categoryid："+categoryid);
         }
         initData();
         initView();
@@ -74,7 +72,7 @@ public class TagActivity extends AppCompatActivity {
     private void initData() {
         page=new Page();
         page.setPageNumber(1);
-        page.setPageSize(4);
+        page.setPageSize(pageSize);
         movies =new ArrayList<MovieModel>();
         loadData(page.getPageNumber(),LOAD_FIRST);
     }
@@ -97,17 +95,15 @@ public class TagActivity extends AppCompatActivity {
                 holder.setText(R.id.id_tags_list_desc2,movieModel.getDescription());
             }
         };
-        commonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+        commonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener<MovieModel>() {
             @Override
-            public void onItemClick(View view, RecyclerView.ViewHolder holder, Object o, int position) {
-                Toast.makeText(mContext, "onItemClick position:" + position + "内容:" + o.toString(), Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(mContext,PlayActivity.class));
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, MovieModel o, int position) {
+                LogicService.getInstance(mContext).toPlayActivity(o);
             }
 
             @Override
-            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, Object o, int position) {
-                Toast.makeText(mContext, "onItemLongClick position:" + position + "内容:" + o.toString(), Toast.LENGTH_SHORT).show();
-                return true;
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, MovieModel o, int position) {
+                return false;
             }
         });
 
@@ -121,7 +117,6 @@ public class TagActivity extends AppCompatActivity {
             public void onLoadMoreRequested(){
                 int size = movies.size();
                 if (size>0){
-                    Logger.i("pageNumber>>>"+page.getPageNumber());
                     loadData(page.getPageNumber(),LOAD_MORE);
                 }
 
@@ -169,6 +164,8 @@ public class TagActivity extends AppCompatActivity {
             //如果是最后一页就去掉加载更多
             if (page.isLastPage()){
                 recyclerview.setAdapter(commonAdapter);
+            }else {
+                recyclerview.setAdapter(mLoadMoreWrapper);
             }
             recyclerview.getAdapter().notifyDataSetChanged();
         }else {

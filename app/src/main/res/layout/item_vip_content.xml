@@ -37,7 +37,7 @@
 
                 <ImageView
                     android:id="@+id/id_vip_pic"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="500dp"
                     android:layout_weight="1"
                     android:scaleType="fitXY"

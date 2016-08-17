@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffececec"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/user_rl_tp"
+        android:layout_width="fill_parent"
+        android:layout_height="52.0dip"
+        android:background="#ff1f1f1f">
+
+        <RelativeLayout
+            android:id="@+id/user_backLayout"
+            android:layout_width="60.0dip"
+            android:layout_height="fill_parent">
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10.0dip"
+                android:src="@drawable/settings_headback" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/user_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="个人信息"
+            android:textColor="#ffffffff"
+            android:textSize="18.0sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_name"
+        android:layout_width="fill_parent"
+        android:layout_height="50.0dip"
+        android:layout_marginTop="10.0dip"
+        android:background="#ffffffff"
+        android:paddingBottom="10.0dip"
+        android:paddingLeft="5.0dip"
+        android:paddingRight="5.0dip"
+        android:paddingTop="10.0dip">
+
+        <TextView
+            android:id="@+id/tv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8.0dip"
+            android:text="@string/setting_account"
+            android:textColor="#cc000000"
+            android:textSize="16.0sp" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5.0dip"
+            android:layout_marginRight="5.0dip"
+            android:layout_toRightOf="@id/tv1"
+            android:gravity="center|right"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="#cc000000"
+            android:textSize="16.0sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_vp"
+        android:layout_width="fill_parent"
+        android:layout_height="50.0dip"
+        android:layout_marginTop="10.0dip"
+        android:background="#ffffffff"
+        android:paddingBottom="10.0dip"
+        android:paddingLeft="5.0dip"
+        android:paddingRight="5.0dip"
+        android:paddingTop="10.0dip">
+
+        <TextView
+            android:id="@+id/tv2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8.0dip"
+            android:text="@string/setting_vip"
+            android:textColor="#cc000000"
+            android:textSize="16.0sp" />
+
+        <TextView
+            android:id="@+id/tv_vp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5.0dip"
+            android:layout_marginRight="5.0dip"
+            android:layout_toRightOf="@id/tv2"
+            android:gravity="center|right"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="#cc000000"
+            android:textSize="16.0sp" />
+    </RelativeLayout>
+</LinearLayout>

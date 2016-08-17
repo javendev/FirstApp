@@ -3,7 +3,6 @@ package com.movieapp.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
 /**
@@ -26,7 +25,6 @@ public class UserModel extends DataSupport implements Parcelable {
      * channelid : cp1001
      * blackstatus : 0
      */
-    @Column(unique = true, defaultValue = "unknown")
     private int id;
     private String devicemac;
     private String IMEI;

@@ -1,13 +1,16 @@
 package com.movieapp.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.movieapp.R;
 import com.movieapp.bean.HomeTags;
 import com.movieapp.bean.MovieModel;
-import com.orhanobut.logger.Logger;
+import com.movieapp.service.LogicService;
+import com.movieapp.widget.imageloader.Imageloader;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ItemViewDelegate;
@@ -21,6 +24,11 @@ import java.util.List;
 public class TagsContentItemDelagate implements ItemViewDelegate<HomeTags> {
     RecyclerView recyclerView;
     private CommonAdapter<MovieModel> mAdapter;
+    private Context mContext;
+
+    public  TagsContentItemDelagate(Context context){
+        mContext = context;
+    }
 
     @Override
     public int getItemViewLayoutId() {
@@ -41,21 +49,17 @@ public class TagsContentItemDelagate implements ItemViewDelegate<HomeTags> {
 
             @Override
             protected void convert(ViewHolder holder, MovieModel movie, int position) {
-//                ImageView view = holder.getView(R.id.id_tagcontent_pic);
-//                Imageloader.getInstance(view.getContext()).setImage(movie.getUrl(),view,R.drawable.default_item_picture);
-                if (position % 2 == 0)
-                holder.setImageResource(R.id.id_tagcontent_pic,R.drawable.ic_test_1);
-                else
-                    holder.setImageResource(R.id.id_tagcontent_pic,R.drawable.ic_test_2);
-                holder.setText(R.id.id_tagcontent_name,movie.getTitle());
+                ImageView view = holder.getView(R.id.id_tagcontent_pic);
                 holder.setText(R.id.id_tagcontent_desc,movie.getDescription());
+                holder.setText(R.id.id_tagcontent_name,movie.getTitle());
+                Imageloader.getInstance(view.getContext()).setImage(movie.getPiclink(),view,R.drawable.default_item_picture);
             }
         };
         mAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener<MovieModel>() {
 
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, MovieModel o, int position) {
-                Logger.i(o.getFenleiLink());
+                LogicService.getInstance(mContext).toPlayActivity(o);
             }
 
             @Override

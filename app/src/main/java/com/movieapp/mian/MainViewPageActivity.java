@@ -10,19 +10,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.movieapp.R;
-import com.movieapp.eventbus.Event;
 import com.movieapp.fragment.FragmentFive;
 import com.movieapp.fragment.FragmentFour;
 import com.movieapp.fragment.FragmentOne;
 import com.movieapp.fragment.FragmentThree;
 import com.movieapp.fragment.FragmentTwo;
-import com.orhanobut.logger.Logger;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -196,12 +190,4 @@ public class MainViewPageActivity extends AppCompatActivity implements RadioGrou
             mainViewPager.setCurrentItem(current);
         }
     }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void buildUserEvent(Event.buildUserEvent event) {
-        Logger.i("Activity接收的值："+event.getUserModel().getUserid());
-        Toast.makeText(this, "获取到信息了", Toast.LENGTH_SHORT).show();
-    }
-
-
 }

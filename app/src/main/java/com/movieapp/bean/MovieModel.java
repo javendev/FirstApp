@@ -3,6 +3,7 @@ package com.movieapp.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
 /**
@@ -27,7 +28,8 @@ public class MovieModel extends DataSupport implements Parcelable {
      * status : 1
      * categoryid : 40
      */
-
+    @Column(unique = true, defaultValue = "unknown")
+    private int id;
     private int videoid;
     private String title;
     private String description;
@@ -50,6 +52,14 @@ public class MovieModel extends DataSupport implements Parcelable {
         this.description = description;
         this.fenleiLink = fenleiLink;
         this.videolink = videolink;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getVideoid() {
@@ -180,64 +190,8 @@ public class MovieModel extends DataSupport implements Parcelable {
         this.rankType = rankType;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.videoid);
-        dest.writeString(this.title);
-        dest.writeString(this.description);
-        dest.writeString(this.playerpiclink);
-        dest.writeString(this.fenleiLink);
-        dest.writeString(this.svideolink);
-        dest.writeString(this.videolink);
-        dest.writeString(this.updatedate);
-        dest.writeInt(this.orderId);
-        dest.writeString(this.piclink);
-        dest.writeString(this.buyamount);
-        dest.writeInt(this.favorcount);
-        dest.writeInt(this.viewcount);
-        dest.writeString(this.status);
-        dest.writeString(this.categoryid);
-        dest.writeInt(this.rankType);
-    }
-
     public MovieModel() {
     }
-
-    protected MovieModel(Parcel in) {
-        this.videoid = in.readInt();
-        this.title = in.readString();
-        this.description = in.readString();
-        this.playerpiclink = in.readString();
-        this.fenleiLink = in.readString();
-        this.svideolink = in.readString();
-        this.videolink = in.readString();
-        this.updatedate = in.readString();
-        this.orderId = in.readInt();
-        this.piclink = in.readString();
-        this.buyamount = in.readString();
-        this.favorcount = in.readInt();
-        this.viewcount = in.readInt();
-        this.status = in.readString();
-        this.categoryid = in.readString();
-        this.rankType = in.readInt();
-    }
-
-    public static final Parcelable.Creator<MovieModel> CREATOR = new Parcelable.Creator<MovieModel>() {
-        @Override
-        public MovieModel createFromParcel(Parcel source) {
-            return new MovieModel(source);
-        }
-
-        @Override
-        public MovieModel[] newArray(int size) {
-            return new MovieModel[size];
-        }
-    };
 
     @Override
     public String toString() {
@@ -260,4 +214,62 @@ public class MovieModel extends DataSupport implements Parcelable {
                 ", rankType='" + rankType + '\'' +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeInt(this.videoid);
+        dest.writeString(this.title);
+        dest.writeString(this.description);
+        dest.writeString(this.playerpiclink);
+        dest.writeString(this.fenleiLink);
+        dest.writeString(this.svideolink);
+        dest.writeString(this.videolink);
+        dest.writeString(this.updatedate);
+        dest.writeInt(this.orderId);
+        dest.writeString(this.piclink);
+        dest.writeString(this.buyamount);
+        dest.writeInt(this.favorcount);
+        dest.writeInt(this.viewcount);
+        dest.writeString(this.status);
+        dest.writeString(this.categoryid);
+        dest.writeInt(this.rankType);
+    }
+
+    protected MovieModel(Parcel in) {
+        this.id = in.readInt();
+        this.videoid = in.readInt();
+        this.title = in.readString();
+        this.description = in.readString();
+        this.playerpiclink = in.readString();
+        this.fenleiLink = in.readString();
+        this.svideolink = in.readString();
+        this.videolink = in.readString();
+        this.updatedate = in.readString();
+        this.orderId = in.readInt();
+        this.piclink = in.readString();
+        this.buyamount = in.readString();
+        this.favorcount = in.readInt();
+        this.viewcount = in.readInt();
+        this.status = in.readString();
+        this.categoryid = in.readString();
+        this.rankType = in.readInt();
+    }
+
+    public static final Creator<MovieModel> CREATOR = new Creator<MovieModel>() {
+        @Override
+        public MovieModel createFromParcel(Parcel source) {
+            return new MovieModel(source);
+        }
+
+        @Override
+        public MovieModel[] newArray(int size) {
+            return new MovieModel[size];
+        }
+    };
 }

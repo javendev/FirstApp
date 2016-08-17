@@ -1,10 +1,8 @@
 package com.movieapp.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ToxicBakery.viewpager.transforms.ABaseTransformer;
 import com.ToxicBakery.viewpager.transforms.AccordionTransformer;
@@ -35,11 +32,16 @@ import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
 import com.movieapp.R;
+import com.movieapp.adapter.DividerItemDecoration;
 import com.movieapp.adapter.HomeTagsAdaper;
+import com.movieapp.bean.HomePage;
 import com.movieapp.bean.HomeTags;
 import com.movieapp.bean.MovieModel;
-import com.movieapp.bean.UserModel;
 import com.movieapp.eventbus.Event;
+import com.movieapp.mian.TagActivity;
+import com.movieapp.service.IMoviceService;
+import com.movieapp.service.LogicService;
+import com.movieapp.service.impl.MoviceServiceImpl;
 import com.movieapp.widget.imageloader.Imageloader;
 import com.orhanobut.logger.Logger;
 import com.zhy.adapter.recyclerview.CommonAdapter;
@@ -48,19 +50,25 @@ import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
 import com.zhy.adapter.recyclerview.wrapper.LoadMoreWrapper;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListener, OnItemClickListener {
-    private final static int LOADINGNOM_WHAT=0x123;
-    private Context mContext;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class FragmentOne extends BaseFragment implements ViewPager.OnPageChangeListener, OnItemClickListener {
+    private final static int LOADINGNOM_WHAT = 0x123;
+    @BindView(R.id.id_recyclerview)
+    RecyclerView mRecyclerView;
+
     private ConvenientBanner convenientBanner;
-    private List<String> adLocalImages = new ArrayList<String>();
-    private List<String> adLocalDescribes = new ArrayList<String>();
     private List<String> transformerList = new ArrayList<String>();
 
-    private RecyclerView mRecyclerView;
+    private List<MovieModel> topList;
+
     private HomeTagsAdaper mAdapter;
     private HeaderAndFooterWrapper mHeaderAndFooterWrapper;
     private LoadMoreWrapper mLoadMoreWrapper;
@@ -69,48 +77,55 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
     private EmptyWrapper mEmptyWrapper;
     private View ad;
 
+    private IMoviceService moviceService;
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
 
-            super.handleMessage(msg);
-        }
-    };
     public FragmentOne() {
-        // Required empty public constructor
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //确保只加载一次
         initTransformerList();
-        loadTestDatas();
+        EventBus.getDefault().register(this);
+
     }
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Logger.v("onCreateView");
-        mContext=getActivity().getApplicationContext();
-        // Inflate the layout for this fragment
-        View view=inflater.inflate(R.layout.fragment_one, container, false);
-        initView(view);
-        init();
+    public View initView(LayoutInflater inflater, ViewGroup container) {
+        View view = inflater.inflate(R.layout.fragment_one, container, false);
+        ButterKnife.bind(this, view);
         return view;
     }
 
-    private void initView(View view){
+    @Override
+    public void initData() {
+        if (moviceService == null) {
+            moviceService = new MoviceServiceImpl(mContext);
+        }
+        if (topList == null){
+            topList = new ArrayList<MovieModel>();
+        }
+        if (mDates == null){
+            mDates = new ArrayList<HomeTags>();
+        }
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
-//        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplication()));
+    }
+
+    @Override
+    public void loadData() {
+        moviceService.getMain(mContext);
     }
 
 
-    private void init(){
-        ad=LayoutInflater.from(getActivity().getApplication()).inflate(R.layout.ad_content,null);
-        convenientBanner= (ConvenientBanner) ad.findViewById(R.id.convenientBanner);
+    @Override
+    protected void initEvent() {
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplication()));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST));
+        ad = LayoutInflater.from(getActivity().getApplication()).inflate(R.layout.ad_content, null);
+        convenientBanner = (ConvenientBanner) ad.findViewById(R.id.convenientBanner);
         //自定义你的Holder，实现更多复杂的界面，不一定是图片翻页，其他任何控件翻页亦可。
         convenientBanner.setPages(
                 new CBViewHolderCreator<LocalImageHolderView>() {
@@ -118,18 +133,19 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
                     public LocalImageHolderView createHolder() {
                         return new LocalImageHolderView();
                     }
-                }, adLocalImages)
+                }, topList)
                 //设置两个点图片作为翻页指示器，不设置则没有指示器，可以根据自己需求自行配合自己的指示器,不需要圆点指示器可用不设
                 .setPageIndicator(new int[]{R.drawable.ic_page_indicator, R.drawable.ic_page_indicator_focused})
                 //设置指示器的方向
                 .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
                 .setManualPageable(true);//设置不能手动影响
-                 //点击监听
-                 convenientBanner .setOnItemClickListener(this);
-                 //设置滑动监听
-                 convenientBanner.setOnPageChangeListener(this);
-        initDates();
-        mAdapter=new HomeTagsAdaper(getActivity().getApplicationContext(),mDates);
+        //点击监听
+        convenientBanner.setOnItemClickListener(this);
+        //设置滑动监听
+        convenientBanner.setOnPageChangeListener(this);
+
+//        initDates();
+        mAdapter = new HomeTagsAdaper(getActivity().getApplicationContext(), mDates);
 
         initHeaderAndFooter();
         initEmptyView();
@@ -137,16 +153,19 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
 
         mRecyclerView.setAdapter(mLoadMoreWrapper);
 
-        mAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener<HomeTags>(){
+        mAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener<HomeTags>() {
 
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, HomeTags o, int position) {
-                Toast.makeText(getActivity().getApplicationContext(), "Click:" + position + " => " + o.isTag(), Toast.LENGTH_SHORT).show();
+                int categoryId = o.getCategoryId();
+                Intent intent = new Intent(mContext, TagActivity.class);
+                intent.putExtra("categoryid",categoryId);
+                startActivity(intent);
+
             }
 
             @Override
             public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, HomeTags o, int position) {
-                Toast.makeText(getActivity().getApplicationContext(), "LongClick:" + position + " => " + o.isTag(), Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
@@ -154,100 +173,85 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
 
     @Override
     public void onItemClick(int position) {
-        Logger.e("广告点击了："+position);
-
-        UserModel userModel = new UserModel();
-        userModel.setUserid("123466879");
-        EventBus.getDefault().post(new Event.buildUserEvent(userModel));
-
+        //广告栏点击
+        LogicService.getInstance(mContext).toPlayActivity(topList.get(position));
     }
 
-    public class LocalImageHolderView implements Holder<String> {
+    public class LocalImageHolderView implements Holder<MovieModel> {
         private ImageView imageView;
         private TextView textView;
+
         @Override
         public View createView(Context context) {
-            View view=LayoutInflater.from(context).inflate(R.layout.ad_item,null);
-            imageView= (ImageView) view.findViewById(R.id.id_img);
-            textView= (TextView) view.findViewById(R.id.id_tv);
+            View view = LayoutInflater.from(context).inflate(R.layout.ad_item, null);
+            imageView = (ImageView) view.findViewById(R.id.id_img);
+            textView = (TextView) view.findViewById(R.id.id_tv);
             return view;
         }
 
         @Override
-        public void UpdateUI(Context context, final int position, String data) {
-            textView.setText(adLocalDescribes.get(position));
-            Imageloader.getInstance(mContext).setImage(data,imageView,R.drawable.ic_test_2);
+        public void UpdateUI(Context context, int position, MovieModel data) {
+            textView.setText(data.getDescription());
+            Imageloader.getInstance(mContext).setImage(data.getPiclink(), imageView, R.drawable.ic_test_2);
         }
+
+
     }
-    private void initEmptyView(){
+
+    private void initEmptyView() {
         mEmptyWrapper = new EmptyWrapper(mAdapter);
         mEmptyWrapper.setEmptyView(LayoutInflater.from(getActivity().getApplication()).inflate(R.layout.empty_view, mRecyclerView, false));
     }
-    private void initHeaderAndFooter(){
+
+    private void initHeaderAndFooter() {
         mHeaderAndFooterWrapper = new HeaderAndFooterWrapper(mAdapter);
         mHeaderAndFooterWrapper.addHeaderView(ad);
     }
 
-
-    private void initDates() {
-        mDates = new ArrayList<HomeTags>();
-        HomeTags tags=new HomeTags();
-        tags.setTag(true);
-        tags.setTagName("高清");
-        mDates.add(tags);
-
-        tags= new HomeTags();
-        tags.setTag(false);
-        List<MovieModel> movies = new ArrayList<MovieModel>();
-        movies.add(new MovieModel("高清名称1","http://www.baidu.com","http://imgstore.cdn.sogou.com/app/a/100540002/714860.jpg","高清这是是否打算对方"));
-        movies.add(new MovieModel("高清名称2","http://www.baidu.com","http://img5.imgtn.bdimg.com/it/u=1390800033,3298177266&fm=206&gp=0.jpg","高清这是是否打算对方2"));
-        tags.setTagList(movies);
-        mDates.add(tags);
-
-        tags=new HomeTags();
-        tags.setTag(true);
-        tags.setTagName("VIP");
-        mDates.add(tags);
-
-        tags= new HomeTags();
-        tags.setTag(false);
-        movies = new ArrayList<MovieModel>();
-        movies.add(new MovieModel("VIP名称1","http://www.baidu.com","http://www.sucaitianxia.com/Photo/pic/201001/gefnegs37.jpg","VIP这是是否打算对方"));
-        movies.add(new MovieModel("VIP名称2","http://www.baidu.com","http://img.tuku.cn/file_big/201503/99ac63ce52d144218db0d18c5faf44ba.jpg","VIP这是是否打算对方2"));
-        movies.add(new MovieModel("VIP名称3","http://www.baidu.com","http://image.tianjimedia.com/uploadImages/2012/236/2H2TR02NKWAA.jpg","VIP这是是否打算对方3"));
-        movies.add(new MovieModel("VIP名称4","http://www.baidu.com","http://ww2.sinaimg.cn/large/4a8cd6e5jw9ekardhvkavj21e011iaod.jpg","VIP这是是否打算对方4"));
-        tags.setTagList(movies);
-        mDates.add(tags);
-
-    }
-    /*
-   加入测试Views
-   * */
-    private void loadTestDatas() {
-        adLocalImages.add("http://www.6188.com/upload_6188s/flashAll/s800/20120517/1337218925uatdTW.jpg");
-        adLocalImages.add("http://p2.pccoo.cn/bbs/20140411/201404111721506076.png");
-        adLocalImages.add("http://img5.imgtn.bdimg.com/it/u=646049329,3325478164&fm=21&gp=0.jpg");
-        adLocalImages.add("http://www.6188.com/upload_6188s/flashAll/s800/20120517/1337218925uatdTW.jpg");
-        adLocalImages.add("http://www.6188.com/upload_6188s/flashAll/s800/20120517/1337218925uatdTW.jpg");
-        adLocalImages.add("http://www.6188.com/upload_6188s/flashAll/s800/20120517/1337218925uatdTW.jpg");
-        adLocalImages.add("http://www.6188.com/upload_6188s/flashAll/s800/20120517/1337218925uatdTW.jpg");
-        //本地图片集合
-        for (int position = 0; position < 7; position++) {
-//            adLocalImages.add(Res.getResId("ic_test_" + position, R.drawable.class));
-
-            adLocalDescribes.add("描述"+position);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void getMainPage(Event.getMainPage event) {
+        HomePage homePage = event.getHomeTags();
+        List<MovieModel> top = homePage.getTop();
+        if (top!=null && top.size()>0){
+            topList.clear();
+            topList.addAll(top);
+            convenientBanner.getViewPager().getAdapter().notifyDataSetChanged();
         }
-//        handler.sendEmptyMessageDelayed(LOADINGNOM_WHAT,3000);
+
+        List<HomePage.Title> title = homePage.getTitle();
+        if (title!=null && title.size()>0){
+            for (int i=0;i<title.size();i++) {
+                HomeTags tags=new HomeTags();
+                tags.setTag(true);
+                tags.setCategoryId(title.get(i).getCategory().getCategoryid());
+                tags.setTagName(title.get(i).getCategory().getCategoryname());
+                mDates.add(tags);
+
+                tags=new HomeTags();
+                tags.setTag(false);
+                tags.setCategoryId(title.get(i).getCategory().getCategoryid());
+                tags.setTagName(title.get(i).getCategory().getCategoryname());
+                tags.setTagList(title.get(i).getContent());
+                mDates.add(tags);
+            }
+        }
+
+        mRecyclerView.getAdapter().notifyDataSetChanged();
+        Logger.e("Top size:" + homePage.getTop().size() + " Title size:" + homePage.getTitle().size() +" mDates size:"+mDates.size());
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 
     // 开始自动翻页
     @Override
     public void onResume() {
         Logger.v("onResume");
         super.onResume();
-        //开始自动翻页
+//        //开始自动翻页
         convenientBanner.startTurning(5000);
     }
 
@@ -265,20 +269,23 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
         Logger.v("onStop");
         super.onStop();
     }
+
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
     }
+
     @Override
     public void onPageSelected(int position) {
 //        Logger.e("监听到翻到第"+position+"了");
         changeTransforms(position);
     }
+
     @Override
     public void onPageScrollStateChanged(int state) {
     }
 
     /**
-     *  各种翻页效果
+     * 各种翻页效果
      */
     private void initTransformerList() {
         transformerList.add(DefaultTransformer.class.getSimpleName());
@@ -297,19 +304,18 @@ public class FragmentOne extends Fragment implements ViewPager.OnPageChangeListe
         transformerList.add(ZoomOutTranformer.class.getSimpleName());
     }
 
-    private  void changeTransforms(int position) {
+    private void changeTransforms(int position) {
         String transforemerName = transformerList.get(position);
         try {
             Class cls = Class.forName("com.ToxicBakery.viewpager.transforms." + transforemerName);
-            ABaseTransformer transforemer= (ABaseTransformer) cls.newInstance();
-            convenientBanner.getViewPager().setPageTransformer(true,transforemer);
+            ABaseTransformer transforemer = (ABaseTransformer) cls.newInstance();
+            convenientBanner.getViewPager().setPageTransformer(true, transforemer);
             //部分3D特效需要调整滑动速度
-            if(transforemerName.equals("StackTransformer")){
+            if (transforemerName.equals("StackTransformer")) {
                 convenientBanner.setScrollDuration(1200);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

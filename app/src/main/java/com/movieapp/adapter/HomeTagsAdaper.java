@@ -14,6 +14,6 @@ public class HomeTagsAdaper extends MultiItemTypeAdapter<HomeTags> {
     public HomeTagsAdaper(Context context, List<HomeTags> datas) {
         super(context, datas);
         addItemViewDelegate(new TagsNameItemDelagate());
-        addItemViewDelegate(new TagsContentItemDelagate());
+        addItemViewDelegate(new TagsContentItemDelagate(context));
     }
 }

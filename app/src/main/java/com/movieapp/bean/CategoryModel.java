@@ -3,6 +3,7 @@ package com.movieapp.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
 /**
@@ -17,7 +18,7 @@ public class CategoryModel extends DataSupport implements Parcelable {
      * categoryname : 最近更新
      * orderId : 1
      */
-
+    @Column(unique = true, defaultValue = "unknown")
     private int categoryid;
     private String iccon;
     private String mainIccon;

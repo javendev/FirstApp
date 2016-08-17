@@ -45,13 +45,10 @@ public class FragmentTwo extends BaseFragment implements SwipeRefreshLayout.OnRe
     private List<CategoryModel> categoryModels;
     CommonAdapter commonAdapter;
 
-    IMoviceService moviceService=new MoviceServiceImpl();
+    IMoviceService moviceService;
 
     public FragmentTwo() {
-
     }
-
-
 
     @Override
     public View initView(LayoutInflater inflater, ViewGroup container) {
@@ -62,7 +59,15 @@ public class FragmentTwo extends BaseFragment implements SwipeRefreshLayout.OnRe
 
     @Override
     public void initData() {
+        if (moviceService == null){
+            moviceService=new MoviceServiceImpl(mContext);
+        }
         categoryModels = new ArrayList<CategoryModel>();
+        loadData(false);
+    }
+
+    @Override
+    public void loadData() {
         loadData(false);
     }
 
@@ -132,8 +137,9 @@ public class FragmentTwo extends BaseFragment implements SwipeRefreshLayout.OnRe
             if (isRefresh){
                 swipeRefreshLayout.setRefreshing(false);
             }
-            recyclerview.getAdapter().notifyDataSetChanged();
-            Toast.makeText(mContext, "数据刷新完成...", Toast.LENGTH_SHORT).show();
+            if (recyclerview.getAdapter() !=null){
+                recyclerview.getAdapter().notifyDataSetChanged();
+            }
         }else {
             Toast.makeText(mContext, "出现错误了", Toast.LENGTH_SHORT).show();
         }

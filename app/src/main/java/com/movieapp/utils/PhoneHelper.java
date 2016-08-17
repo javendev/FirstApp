@@ -7,8 +7,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -203,29 +201,6 @@ public class PhoneHelper {
 			}
 		} catch (Exception e) {
 			Log.w("PhoneHelper", "021:" + e.toString());
-		}
-		return false;
-	}
-	
-	/**
-	 * 获取当前网络状况
-	 * 
-	 * @return 如果网络已经连接，并且可用返回true, 否则false
-	 * */
-	public static boolean getNetworkState(Context context) {
-		try {
-			ConnectivityManager connectivity = (ConnectivityManager) context
-					.getSystemService(Context.CONNECTIVITY_SERVICE);
-			if (connectivity != null) {
-				NetworkInfo networkinfo = connectivity.getActiveNetworkInfo();
-				if (networkinfo != null) {
-					if (networkinfo.isAvailable() && networkinfo.isConnected()) {
-						return true;
-					}
-				}
-			}
-		} catch (Exception e) {
-			return false;
 		}
 		return false;
 	}
